@@ -173,7 +173,7 @@ func (s *Server) registerOpenAPIRoutes(jsonSpec []byte) {
 	s.printOpenAPIMessage(fmt.Sprintf("JSON spec: %s%s", s.url(), s.OpenAPIConfig.JsonUrl))
 
 	if !s.OpenAPIConfig.DisableSwaggerUI {
-		Register(s, Route[any, any]{
+		Register(s, Route[any, any, any]{
 			BaseRoute: BaseRoute{
 				Method: http.MethodGet,
 				Path:   s.OpenAPIConfig.SwaggerUrl + "/",
@@ -201,7 +201,7 @@ func validateSwaggerUrl(swaggerUrl string) bool {
 
 // RegisterOpenAPIOperation registers the route to the OpenAPI description.
 // Modifies the route's Operation.
-func (route *Route[ResponseBody, RequestBody]) RegisterOpenAPIOperation(openapi *OpenAPI) error {
+func (route *Route[ResponseBody, RequestBody, Params]) RegisterOpenAPIOperation(openapi *OpenAPI) error {
 	operation, err := RegisterOpenAPIOperation(openapi, *route)
 	route.Operation = operation
 	return err
@@ -210,7 +210,7 @@ func (route *Route[ResponseBody, RequestBody]) RegisterOpenAPIOperation(openapi 
 // RegisterOpenAPIOperation registers an OpenAPI operation.
 //
 // Deprecated: Use `(*Route[ResponseBody, RequestBody]).RegisterOpenAPIOperation` instead.
-func RegisterOpenAPIOperation[T, B any](openapi *OpenAPI, route Route[T, B]) (*openapi3.Operation, error) {
+func RegisterOpenAPIOperation[T, B, P any](openapi *OpenAPI, route Route[T, B, P]) (*openapi3.Operation, error) {
 	if route.Operation == nil {
 		route.Operation = openapi3.NewOperation()
 	}

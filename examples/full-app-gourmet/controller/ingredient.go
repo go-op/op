@@ -40,7 +40,7 @@ func (ci *CreateIngredient) InTransform(context.Context) error {
 	return nil
 }
 
-func (rs ingredientResource) newIngredient(c *fuego.ContextWithBody[CreateIngredient]) (store.Ingredient, error) {
+func (rs ingredientResource) newIngredient(c fuego.ContextWithBody[CreateIngredient]) (store.Ingredient, error) {
 	body, err := c.Body()
 	if err != nil {
 		return store.Ingredient{}, err

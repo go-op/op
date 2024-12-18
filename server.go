@@ -234,7 +234,7 @@ func WithSecurity(schemes openapi3.SecuritySchemes) func(*Server) {
 // For example:
 //
 //	recipeGroup := fuego.Group(s, "/recipes")
-//	fuego.Get(recipeGroup, "/", func(*ContextNoBody) (ans, error) {
+//	fuego.Get(recipeGroup, "/", func(ContextNoBody) (ans, error) {
 //		return ans{}, nil
 //	})
 //

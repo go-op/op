@@ -15,11 +15,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func controller(c *ContextNoBody) (testStruct, error) {
+func controller(c ContextNoBody) (testStruct, error) {
 	return testStruct{Name: "Ewen", Age: 23}, nil
 }
 
-func controllerWithError(c *ContextNoBody) (testStruct, error) {
+func controllerWithError(c ContextNoBody) (testStruct, error) {
 	return testStruct{}, HTTPError{Err: errors.New("error")}
 }
 
@@ -309,7 +309,7 @@ type Resp struct {
 	Message string `json:"message"`
 }
 
-func dummyController(_ *ContextWithBody[ReqBody]) (Resp, error) {
+func dummyController(_ ContextWithBody[ReqBody]) (Resp, error) {
 	return Resp{Message: "hello world"}, nil
 }
 
@@ -348,7 +348,7 @@ func TestCustomSerialization(t *testing.T) {
 		}),
 	)
 
-	Get(s, "/", func(c *ContextNoBody) (ans, error) {
+	Get(s, "/", func(c ContextNoBody) (ans, error) {
 		return ans{Ans: "Hello World"}, nil
 	})
 

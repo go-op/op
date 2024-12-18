@@ -41,7 +41,7 @@ type MyResponse struct {
 	Answer string ` + "`json:\"answer\"`" + `
 }
 
-func hello(ctx *fuego.ContextWithBody[MyBody]) (*MyResponse, error) {
+func hello(ctx fuego.ContextWithBody[MyBody]) (*MyResponse, error) {
 	body, err := ctx.Body()
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ type MyResponse struct {
 	Answer string ` + "`json:\"answer\"`" + `
 }
 
-func getAllPets(ctx *fuego.ContextNoBody) (*MyResponse, error) {
+func getAllPets(ctx fuego.ContextNoBody) (*MyResponse, error) {
 	name := ctx.QueryParam("name")
 	perPage, _ := ctx.QueryParamIntErr("per_page")
 

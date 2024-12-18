@@ -16,7 +16,7 @@ func (rs dosingResource) MountRoutes(s *fuego.Server) {
 	fuego.Post(dosingGroup, "/new", rs.newDosing)
 }
 
-func (rs dosingResource) newDosing(c *fuego.ContextWithBody[store.CreateDosingParams]) (store.Dosing, error) {
+func (rs dosingResource) newDosing(c fuego.ContextWithBody[store.CreateDosingParams]) (store.Dosing, error) {
 	body, err := c.Body()
 	if err != nil {
 		return store.Dosing{}, err

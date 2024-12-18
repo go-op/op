@@ -26,11 +26,11 @@ type ans struct {
 	Ans string `json:"ans"`
 }
 
-func testController(c *ContextNoBody) (ans, error) {
+func testController(c ContextNoBody) (ans, error) {
 	return ans{Ans: "Hello World"}, nil
 }
 
-func testControllerWithError(c *ContextNoBody) (ans, error) {
+func testControllerWithError(c ContextNoBody) (ans, error) {
 	return ans{}, HTTPError{Err: errors.New("error happened!")}
 }
 
@@ -47,27 +47,27 @@ func (t *testOutTransformer) OutTransform(ctx context.Context) error {
 
 var _ OutTransformer = &testOutTransformer{}
 
-func testControllerWithOutTransformer(c *ContextNoBody) (testOutTransformer, error) {
+func testControllerWithOutTransformer(c ContextNoBody) (testOutTransformer, error) {
 	return testOutTransformer{Name: "John"}, nil
 }
 
-func testControllerWithOutTransformerStar(c *ContextNoBody) (*testOutTransformer, error) {
+func testControllerWithOutTransformerStar(c ContextNoBody) (*testOutTransformer, error) {
 	return &testOutTransformer{Name: "John"}, nil
 }
 
-func testControllerWithOutTransformerStarError(c *ContextNoBody) (*testOutTransformer, error) {
+func testControllerWithOutTransformerStarError(c ContextNoBody) (*testOutTransformer, error) {
 	return nil, HTTPError{Err: errors.New("error happened!")}
 }
 
-func testControllerWithOutTransformerStarNil(c *ContextNoBody) (*testOutTransformer, error) {
+func testControllerWithOutTransformerStarNil(c ContextNoBody) (*testOutTransformer, error) {
 	return nil, nil
 }
 
-func testControllerReturningString(c *ContextNoBody) (string, error) {
+func testControllerReturningString(c ContextNoBody) (string, error) {
 	return "hello world", nil
 }
 
-func testControllerReturningPtrToString(c *ContextNoBody) (*string, error) {
+func testControllerReturningPtrToString(c ContextNoBody) (*string, error) {
 	s := "hello world"
 	return &s, nil
 }
@@ -186,7 +186,7 @@ func TestSetStatusBeforeSend(t *testing.T) {
 	s := NewServer()
 
 	t.Run("can set status before sending", func(t *testing.T) {
-		handler := HTTPHandler(s, func(c *ContextNoBody) (ans, error) {
+		handler := HTTPHandler(s, func(c ContextNoBody) (ans, error) {
 			c.Response().WriteHeader(201)
 			return ans{Ans: "Hello World"}, nil
 		}, nil)
@@ -202,7 +202,7 @@ func TestSetStatusBeforeSend(t *testing.T) {
 	})
 
 	t.Run("can set status with the shortcut before sending", func(t *testing.T) {
-		handler := HTTPHandler(s, func(c *ContextNoBody) (ans, error) {
+		handler := HTTPHandler(s, func(c ContextNoBody) (ans, error) {
 			c.SetStatus(202)
 			return ans{Ans: "Hello World"}, nil
 		}, nil)
@@ -251,13 +251,13 @@ func TestServeRenderer(t *testing.T) {
 	)
 
 	t.Run("can serve renderer", func(t *testing.T) {
-		Get(s, "/", func(c *ContextNoBody) (Renderer, error) {
+		Get(s, "/", func(c ContextNoBody) (Renderer, error) {
 			return testRenderer{}, nil
 		})
-		Get(s, "/error-in-controller", func(c *ContextNoBody) (Renderer, error) {
+		Get(s, "/error-in-controller", func(c ContextNoBody) (Renderer, error) {
 			return nil, errors.New("error")
 		})
-		Get(s, "/error-in-rendering", func(c *ContextNoBody) (Renderer, error) {
+		Get(s, "/error-in-rendering", func(c ContextNoBody) (Renderer, error) {
 			return testErrorRenderer{}, nil
 		})
 
@@ -290,13 +290,13 @@ func TestServeRenderer(t *testing.T) {
 	})
 
 	t.Run("can serve ctx renderer", func(t *testing.T) {
-		Get(s, "/ctx", func(c *ContextNoBody) (CtxRenderer, error) {
+		Get(s, "/ctx", func(c ContextNoBody) (CtxRenderer, error) {
 			return testCtxRenderer{}, nil
 		})
-		Get(s, "/ctx/error-in-controller", func(c *ContextNoBody) (CtxRenderer, error) {
+		Get(s, "/ctx/error-in-controller", func(c ContextNoBody) (CtxRenderer, error) {
 			return nil, errors.New("error")
 		})
-		Get(s, "/ctx/error-in-rendering", func(c *ContextNoBody) (CtxRenderer, error) {
+		Get(s, "/ctx/error-in-rendering", func(c ContextNoBody) (CtxRenderer, error) {
 			return testCtxErrorRenderer{}, nil
 		})
 
@@ -332,7 +332,7 @@ func TestServeRenderer(t *testing.T) {
 func TestServeError(t *testing.T) {
 	s := NewServer()
 
-	Get(s, "/ctx/error-in-controller", func(c *ContextNoBody) (CtxRenderer, error) {
+	Get(s, "/ctx/error-in-controller", func(c ContextNoBody) (CtxRenderer, error) {
 		return nil, HTTPError{Err: errors.New("error")}
 	})
 
@@ -351,11 +351,7 @@ func TestIni(t *testing.T) {
 	t.Run("can initialize ContextNoBody", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/ctx/error-in-rendering", nil)
 		w := httptest.NewRecorder()
-		ctx, err := initContext[ContextNoBody](ContextNoBody{
-			Req: req,
-			Res: w,
-		})
-		require.NoError(t, err)
+		ctx := NewContextNoBody(w, req, readOptions{})
 
 		require.NotNil(t, ctx)
 		require.NotNil(t, ctx.Request())
@@ -365,11 +361,7 @@ func TestIni(t *testing.T) {
 	t.Run("can initialize ContextNoBody", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/ctx/error-in-rendering", nil)
 		w := httptest.NewRecorder()
-		ctx, err := initContext[*ContextNoBody](ContextNoBody{
-			Req: req,
-			Res: w,
-		})
-		require.NoError(t, err)
+		ctx := NewContextNoBody(w, req, readOptions{})
 
 		require.NotNil(t, ctx)
 		require.NotNil(t, ctx.Request())
@@ -379,11 +371,7 @@ func TestIni(t *testing.T) {
 	t.Run("can initialize ContextWithBody[string]", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/ctx/error-in-rendering", nil)
 		w := httptest.NewRecorder()
-		ctx, err := initContext[*ContextWithBody[string]](ContextNoBody{
-			Req: req,
-			Res: w,
-		})
-		require.NoError(t, err)
+		ctx := NewContextNoBody(w, req, readOptions{})
 
 		require.NotNil(t, ctx)
 		require.NotNil(t, ctx.Request())
@@ -393,27 +381,11 @@ func TestIni(t *testing.T) {
 	t.Run("can initialize ContextWithBody[struct]", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/ctx/error-in-rendering", nil)
 		w := httptest.NewRecorder()
-		ctx, err := initContext[*ContextWithBody[ans]](ContextNoBody{
-			Req: req,
-			Res: w,
-		})
-		require.NoError(t, err)
+		ctx := NewContextNoBody(w, req, readOptions{})
 
 		require.NotNil(t, ctx)
 		require.NotNil(t, ctx.Request())
 		require.NotNil(t, ctx.Response())
-	})
-
-	t.Run("cannot initialize with Ctx interface", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/ctx/error-in-rendering", nil)
-		w := httptest.NewRecorder()
-
-		require.Panics(t, func() {
-			initContext[ctx[any]](ContextNoBody{
-				Req: req,
-				Res: w,
-			})
-		})
 	})
 }
 
@@ -425,7 +397,7 @@ func TestServer_Run(t *testing.T) {
 			WithoutLogger(),
 		)
 
-		Get(s, "/test", func(ctx *ContextNoBody) (string, error) {
+		Get(s, "/test", func(ctx ContextNoBody) (string, error) {
 			return "OK", nil
 		})
 
@@ -495,7 +467,7 @@ func TestServer_RunTLS(t *testing.T) {
 				s.Server.TLSConfig = tc.tlsConfig
 			}
 
-			Get(s, "/test", func(ctx *ContextNoBody) (string, error) {
+			Get(s, "/test", func(ctx ContextNoBody) (string, error) {
 				return "OK", nil
 			})
 

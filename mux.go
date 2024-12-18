@@ -45,32 +45,32 @@ func Group(s *Server, path string, routeOptions ...func(*BaseRoute)) *Server {
 }
 
 // Capture all methods (GET, POST, PUT, PATCH, DELETE) and register a controller.
-func All[ReturnType, Body any, Contexted ctx[Body]](s *Server, path string, controller func(Contexted) (ReturnType, error), options ...func(*BaseRoute)) *Route[ReturnType, Body] {
+func All[T, B, P any](s *Server, path string, controller func(Context[B, P]) (T, error), options ...func(*BaseRoute)) *Route[T, B, P] {
 	return registerFuegoController(s, "", path, controller, options...)
 }
 
-func Get[T, B any, Contexted ctx[B]](s *Server, path string, controller func(Contexted) (T, error), options ...func(*BaseRoute)) *Route[T, B] {
+func Get[T, B, P any](s *Server, path string, controller func(Context[B, P]) (T, error), options ...func(*BaseRoute)) *Route[T, B, P] {
 	return registerFuegoController(s, http.MethodGet, path, controller, options...)
 }
 
-func Post[T, B any, Contexted ctx[B]](s *Server, path string, controller func(Contexted) (T, error), options ...func(*BaseRoute)) *Route[T, B] {
+func Post[T, B, P any](s *Server, path string, controller func(Context[B, P]) (T, error), options ...func(*BaseRoute)) *Route[T, B, P] {
 	return registerFuegoController(s, http.MethodPost, path, controller, options...)
 }
 
-func Delete[T, B any, Contexted ctx[B]](s *Server, path string, controller func(Contexted) (T, error), options ...func(*BaseRoute)) *Route[T, B] {
+func Delete[T, B, P any](s *Server, path string, controller func(Context[B, P]) (T, error), options ...func(*BaseRoute)) *Route[T, B, P] {
 	return registerFuegoController(s, http.MethodDelete, path, controller, options...)
 }
 
-func Put[T, B any, Contexted ctx[B]](s *Server, path string, controller func(Contexted) (T, error), options ...func(*BaseRoute)) *Route[T, B] {
+func Put[T, B, P any](s *Server, path string, controller func(Context[B, P]) (T, error), options ...func(*BaseRoute)) *Route[T, B, P] {
 	return registerFuegoController(s, http.MethodPut, path, controller, options...)
 }
 
-func Patch[T, B any, Contexted ctx[B]](s *Server, path string, controller func(Contexted) (T, error), options ...func(*BaseRoute)) *Route[T, B] {
+func Patch[T, B, P any](s *Server, path string, controller func(Context[B, P]) (T, error), options ...func(*BaseRoute)) *Route[T, B, P] {
 	return registerFuegoController(s, http.MethodPatch, path, controller, options...)
 }
 
 // Register registers a controller into the default mux and documents it in the OpenAPI spec.
-func Register[T, B any](s *Server, route Route[T, B], controller http.Handler, options ...func(*BaseRoute)) *Route[T, B] {
+func Register[T, B, P any](s *Server, route Route[T, B, P], controller http.Handler, options ...func(*BaseRoute)) *Route[T, B, P] {
 	for _, o := range options {
 		o(&route.BaseRoute)
 	}
@@ -108,8 +108,8 @@ func Use(s *Server, middlewares ...func(http.Handler) http.Handler) {
 
 // Handle registers a standard HTTP handler into the default mux.
 // Use this function if you want to use a standard HTTP handler instead of a Fuego controller.
-func Handle(s *Server, path string, controller http.Handler, options ...func(*BaseRoute)) *Route[any, any] {
-	return Register(s, Route[any, any]{
+func Handle(s *Server, path string, controller http.Handler, options ...func(*BaseRoute)) *Route[any, any, any] {
+	return Register(s, Route[any, any, any]{
 		BaseRoute: BaseRoute{
 			Path:     path,
 			FullName: FuncName(controller),
@@ -117,32 +117,32 @@ func Handle(s *Server, path string, controller http.Handler, options ...func(*Ba
 	}, controller)
 }
 
-func AllStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any] {
+func AllStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any, any] {
 	return registerStdController(s, "", path, controller, options...)
 }
 
-func GetStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any] {
+func GetStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any, any] {
 	return registerStdController(s, http.MethodGet, path, controller, options...)
 }
 
-func PostStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any] {
+func PostStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any, any] {
 	return registerStdController(s, http.MethodPost, path, controller, options...)
 }
 
-func DeleteStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any] {
+func DeleteStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any, any] {
 	return registerStdController(s, http.MethodDelete, path, controller, options...)
 }
 
-func PutStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any] {
+func PutStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any, any] {
 	return registerStdController(s, http.MethodPut, path, controller, options...)
 }
 
-func PatchStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any] {
+func PatchStd(s *Server, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any, any] {
 	return registerStdController(s, http.MethodPatch, path, controller, options...)
 }
 
-func registerFuegoController[T, B any, Contexted ctx[B]](s *Server, method, path string, controller func(Contexted) (T, error), options ...func(*BaseRoute)) *Route[T, B] {
-	route := NewRoute[T, B](method, path, controller, s.OpenAPI, append(s.routeOptions, options...)...)
+func registerFuegoController[T, B, P any](s *Server, method, path string, controller func(Context[B, P]) (T, error), options ...func(*BaseRoute)) *Route[T, B, P] {
+	route := NewRoute[T, B, P](method, path, controller, s.OpenAPI, append(s.routeOptions, options...)...)
 
 	acceptHeaderParameter := openapi3.NewHeaderParameter("Accept")
 	acceptHeaderParameter.Schema = openapi3.NewStringSchema().NewRef()
@@ -151,8 +151,8 @@ func registerFuegoController[T, B any, Contexted ctx[B]](s *Server, method, path
 	return Register(s, route, HTTPHandler(s, controller, &route.BaseRoute))
 }
 
-func registerStdController(s *Server, method, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any] {
-	route := NewRoute[any, any](method, path, controller, s.OpenAPI, append(s.routeOptions, options...)...)
+func registerStdController(s *Server, method, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any, any] {
+	route := NewRoute[any, any, any](method, path, controller, s.OpenAPI, append(s.routeOptions, options...)...)
 
 	return Register(s, route, http.HandlerFunc(controller))
 }
@@ -175,7 +175,7 @@ func FuncName(f interface{}) string {
 //
 // The output can be further modified with a list of optional
 // string manipulation funcs (i.e func(string) string)
-func (route Route[T, B]) NameFromNamespace(opts ...func(string) string) string {
+func (route Route[T, B, P]) NameFromNamespace(opts ...func(string) string) string {
 	ss := strings.Split(route.FullName, ".")
 	name := ss[len(ss)-1]
 	for _, o := range opts {

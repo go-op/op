@@ -175,27 +175,27 @@ type BookToCreate struct {
 	Title string `json:"title"`
 }
 
-func GetBooks(c *fuego.ContextNoBody) ([]Book, error) {
+func GetBooks(c fuego.ContextNoBody) ([]Book, error) {
 	// Your code here
 	return nil, nil
 }
 
-func CreateBook(c *fuego.ContextWithBody[BookToCreate]) (Book, error) {
+func CreateBook(c fuego.ContextWithBody[BookToCreate]) (Book, error) {
 	// Your code here
 	return Book{}, nil
 }
 
-func GetBook(c *fuego.ContextNoBody) (Book, error) {
+func GetBook(c fuego.ContextNoBody) (Book, error) {
 	// Your code here
 	return Book{}, nil
 }
 
-func UpdateBook(c *fuego.ContextWithBody[Book]) (Book, error) {
+func UpdateBook(c fuego.ContextWithBody[Book]) (Book, error) {
 	// Your code here
 	return Book{}, nil
 }
 
-func DeleteBook(c *fuego.ContextNoBody) (any, error) {
+func DeleteBook(c fuego.ContextNoBody) (any, error) {
 	// Your code here
 	return nil, nil
 }

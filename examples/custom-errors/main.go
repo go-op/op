@@ -38,7 +38,7 @@ func main() {
 	fuego.Use(s, cors.Default().Handler)
 	fuego.Use(s, chiMiddleware.Compress(5, "text/html", "text/css"))
 
-	fuego.Get(s, "/custom-err", func(c *fuego.ContextNoBody) (string, error) {
+	fuego.Get(s, "/custom-err", func(c fuego.ContextNoBody) (string, error) {
 		return "hello", MyError{Err: errors.New("my error")}
 	},
 		option.AddError(http.StatusTeapot, "my custom teapot error", MyError{}),

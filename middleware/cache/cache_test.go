@@ -19,7 +19,7 @@ type testStruct struct {
 
 const waitTime = 10 * time.Millisecond
 
-func baseController(c *fuego.ContextNoBody) (testStruct, error) {
+func baseController(c fuego.ContextNoBody) (testStruct, error) {
 	time.Sleep(waitTime)
 	return testStruct{Name: "test", Age: 10}, nil
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/templa/components"
 )
 
-func (rs Resource) adminOneIngredient(c *fuego.ContextWithBody[store.UpdateIngredientParams]) (any, error) {
+func (rs Resource) adminOneIngredient(c fuego.ContextWithBody[store.UpdateIngredientParams]) (any, error) {
 	id := c.PathParam("id")
 
 	if c.Request().Method == "PUT" {
@@ -42,11 +42,11 @@ func (rs Resource) adminOneIngredient(c *fuego.ContextWithBody[store.UpdateIngre
 	return admin.IngredientPage(ingredient), nil
 }
 
-func (rs Resource) adminIngredientCreationPage(c *fuego.ContextWithBody[store.CreateIngredientParams]) (any, error) {
+func (rs Resource) adminIngredientCreationPage(c fuego.ContextWithBody[store.CreateIngredientParams]) (any, error) {
 	return admin.IngredientNew(), nil
 }
 
-func (rs Resource) adminCreateIngredient(c *fuego.ContextWithBody[store.CreateIngredientParams]) (any, error) {
+func (rs Resource) adminCreateIngredient(c fuego.ContextWithBody[store.CreateIngredientParams]) (any, error) {
 	createIngredientArgs, err := c.Body()
 	if err != nil {
 		return nil, err

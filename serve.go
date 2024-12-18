@@ -1,7 +1,6 @@
 package fuego
 
 import (
-	"fmt"
 	"html/template"
 	"log/slog"
 	"net/http"
@@ -58,41 +57,11 @@ func (s *Server) url() string {
 	return s.proto() + "://" + s.Server.Addr
 }
 
-// initializes any Context type with the base ContextNoBody context.
-//
-//	var ctx ContextWithBody[any] // does not work because it will create a ContextWithBody[any] with a nil value
-func initContext[Contextable ctx[Body], Body any](baseContext ContextNoBody) (Contextable, error) {
-	var c Contextable
-
-	err := validateParams(baseContext)
-	if err != nil {
-		return c, err
-	}
-
-	switch any(c).(type) {
-	case ContextNoBody:
-		return any(baseContext).(Contextable), nil
-	case *ContextNoBody:
-		return any(&baseContext).(Contextable), nil
-	case *ContextWithBody[Body]:
-		return any(&ContextWithBody[Body]{
-			ContextNoBody: baseContext,
-		}).(Contextable), nil
-	default:
-		panic("unknown type")
-	}
-}
-
 // HTTPHandler converts a Fuego controller into a http.HandlerFunc.
 // Uses Server for configuration.
 // Uses Route for route configuration. Optional.
-func HTTPHandler[ReturnType, Body any, Contextable ctx[Body]](s *Server, controller func(c Contextable) (ReturnType, error), route *BaseRoute) http.HandlerFunc {
+func HTTPHandler[ReturnType, Body, Params any](s *Server, controller func(c Context[Body, Params]) (ReturnType, error), route *BaseRoute) http.HandlerFunc {
 	// Just a check, not used at request time
-	baseContext := *new(Contextable)
-	if reflect.TypeOf(baseContext) == nil {
-		slog.Info(fmt.Sprintf("context is nil: %v %T", baseContext, baseContext))
-		panic("ctx must be provided as concrete type (not interface). ContextNoBody, ContextWithBody[any], ContextFull[any, any], ContextWithQueryParams[any] are supported")
-	}
 
 	if route == nil {
 		route = &BaseRoute{}
@@ -109,18 +78,24 @@ func HTTPHandler[ReturnType, Body any, Contextable ctx[Body]](s *Server, control
 			templates = template.Must(s.template.Clone())
 		}
 
-		ctx, err := initContext[Contextable](ContextNoBody{
-			Req: r,
-			Res: w,
-			readOptions: readOptions{
-				DisallowUnknownFields: s.DisallowUnknownFields,
-				MaxBodySize:           s.maxBodySize,
+		ctx := &contextImpl[Body, Params]{
+			contextWithBodyImpl: contextWithBodyImpl[Body]{
+				contextNoBodyImpl: contextNoBodyImpl{
+					Req: r,
+					Res: w,
+					readOptions: readOptions{
+						DisallowUnknownFields: s.DisallowUnknownFields,
+						MaxBodySize:           s.maxBodySize,
+					},
+					fs:        s.fs,
+					templates: templates,
+					params:    route.Params,
+					urlValues: r.URL.Query(),
+				},
 			},
-			fs:        s.fs,
-			templates: templates,
-			params:    route.Params,
-			urlValues: r.URL.Query(),
-		})
+		}
+
+		err := validateParams(ctx.contextNoBodyImpl)
 		if err != nil {
 			err = s.ErrorHandler(err)
 			s.SerializeError(w, r, err)

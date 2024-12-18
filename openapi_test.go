@@ -205,16 +205,16 @@ func Test_tagFromType(t *testing.T) {
 
 func TestServer_generateOpenAPI(t *testing.T) {
 	s := NewServer()
-	Get(s, "/", func(*ContextNoBody) (MyStruct, error) {
+	Get(s, "/", func(ContextNoBody) (MyStruct, error) {
 		return MyStruct{}, nil
 	})
-	Post(s, "/post", func(*ContextWithBody[MyStruct]) ([]MyStruct, error) {
+	Post(s, "/post", func(ContextWithBody[MyStruct]) ([]MyStruct, error) {
 		return nil, nil
 	})
-	Get(s, "/post/{id}", func(*ContextNoBody) (MyOutputStruct, error) {
+	Get(s, "/post/{id}", func(ContextNoBody) (MyOutputStruct, error) {
 		return MyOutputStruct{}, nil
 	})
-	Post(s, "/multidimensional/post", func(*ContextWithBody[MyStruct]) ([][]MyStruct, error) {
+	Post(s, "/multidimensional/post", func(ContextWithBody[MyStruct]) ([][]MyStruct, error) {
 		return nil, nil
 	})
 	document := s.OutputOpenAPISpec()
@@ -251,7 +251,7 @@ func TestServer_OutputOpenApiSpec(t *testing.T) {
 				},
 			),
 		)
-		Get(s, "/", func(*ContextNoBody) (MyStruct, error) {
+		Get(s, "/", func(ContextNoBody) (MyStruct, error) {
 			return MyStruct{}, nil
 		})
 
@@ -273,7 +273,7 @@ func TestServer_OutputOpenApiSpec(t *testing.T) {
 				},
 			),
 		)
-		Get(s, "/", func(*ContextNoBody) (MyStruct, error) {
+		Get(s, "/", func(ContextNoBody) (MyStruct, error) {
 			return MyStruct{}, nil
 		})
 
@@ -294,7 +294,7 @@ func TestServer_OutputOpenApiSpec(t *testing.T) {
 				},
 			),
 		)
-		Get(s, "/", func(*ContextNoBody) (MyStruct, error) {
+		Get(s, "/", func(ContextNoBody) (MyStruct, error) {
 			return MyStruct{}, nil
 		})
 
@@ -315,7 +315,7 @@ func TestServer_OutputOpenApiSpec(t *testing.T) {
 				},
 			),
 		)
-		Get(s, "/", func(*ContextNoBody) (MyStruct, error) {
+		Get(s, "/", func(ContextNoBody) (MyStruct, error) {
 			return MyStruct{}, nil
 		})
 
@@ -350,7 +350,7 @@ func BenchmarkRoutesRegistration(b *testing.B) {
 			return MyStruct{}, nil
 		})
 		for j := 0; j < 100; j++ {
-			Post(s, fmt.Sprintf("/post/%d", j), func(*ContextWithBody[MyStruct]) ([]MyStruct, error) {
+			Post(s, fmt.Sprintf("/post/%d", j), func(ContextWithBody[MyStruct]) ([]MyStruct, error) {
 				return nil, nil
 			})
 		}
@@ -371,7 +371,7 @@ func BenchmarkServer_generateOpenAPI(b *testing.B) {
 			return MyStruct{}, nil
 		})
 		for j := 0; j < 100; j++ {
-			Post(s, fmt.Sprintf("/post/%d", j), func(*ContextWithBody[MyStruct]) ([]MyStruct, error) {
+			Post(s, fmt.Sprintf("/post/%d", j), func(ContextWithBody[MyStruct]) ([]MyStruct, error) {
 				return nil, nil
 			})
 		}
@@ -430,22 +430,22 @@ func TestAutoGroupTags(t *testing.T) {
 			DisableSwagger:   true,
 		}),
 	)
-	Get(s, "/a", func(*ContextNoBody) (MyStruct, error) {
+	Get(s, "/a", func(ContextNoBody) (MyStruct, error) {
 		return MyStruct{}, nil
 	})
 
 	group := Group(s, "/group")
-	Get(group, "/b", func(*ContextNoBody) (MyStruct, error) {
+	Get(group, "/b", func(ContextNoBody) (MyStruct, error) {
 		return MyStruct{}, nil
 	})
 
 	subGroup := Group(group, "/subgroup")
-	Get(subGroup, "/c", func(*ContextNoBody) (MyStruct, error) {
+	Get(subGroup, "/c", func(ContextNoBody) (MyStruct, error) {
 		return MyStruct{}, nil
 	})
 
 	otherGroup := Group(s, "/other")
-	Get(otherGroup, "/d", func(*ContextNoBody) (MyStruct, error) {
+	Get(otherGroup, "/d", func(ContextNoBody) (MyStruct, error) {
 		return MyStruct{}, nil
 	})
 
@@ -503,7 +503,7 @@ func TestEmbeddedStructHandling(t *testing.T) {
 	}
 
 	// Register a route that returns OuterStruct
-	Get(s, "/embedded", func(*ContextNoBody) (OuterStruct, error) {
+	Get(s, "/embedded", func(ContextNoBody) (OuterStruct, error) {
 		return OuterStruct{}, nil
 	})
 

@@ -111,7 +111,7 @@ func TestShowRecipesOpenAPITypes(t *testing.T) {
 		B string
 	}
 
-	route := fuego.Get(s, "/data", func(*fuego.ContextNoBody) (*fuego.DataOrTemplate[MyStruct], error) {
+	route := fuego.Get(s, "/data", func(fuego.ContextNoBody) (*fuego.DataOrTemplate[MyStruct], error) {
 		entity := MyStruct{}
 
 		return &fuego.DataOrTemplate[MyStruct]{

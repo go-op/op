@@ -108,7 +108,7 @@ func (rs PetsResources) getAllPetsByAge(c fuego.ContextNoBody) ([][]models.Pets,
 	return rs.PetsService.GetAllPetsByAge()
 }
 
-func (rs PetsResources) postPets(c *fuego.ContextWithBody[models.PetsCreate]) (models.Pets, error) {
+func (rs PetsResources) postPets(c fuego.ContextWithBody[models.PetsCreate]) (models.Pets, error) {
 	body, err := c.Body()
 	if err != nil {
 		return models.Pets{}, err
@@ -129,7 +129,7 @@ func (rs PetsResources) getPetByName(c fuego.ContextNoBody) (models.Pets, error)
 	return rs.PetsService.GetPetByName(name)
 }
 
-func (rs PetsResources) putPets(c *fuego.ContextWithBody[models.PetsUpdate]) (models.Pets, error) {
+func (rs PetsResources) putPets(c fuego.ContextWithBody[models.PetsUpdate]) (models.Pets, error) {
 	id := c.PathParam("id")
 
 	body, err := c.Body()
@@ -140,7 +140,7 @@ func (rs PetsResources) putPets(c *fuego.ContextWithBody[models.PetsUpdate]) (mo
 	return rs.PetsService.UpdatePets(id, body)
 }
 
-func (rs PetsResources) deletePets(c *fuego.ContextNoBody) (any, error) {
+func (rs PetsResources) deletePets(c fuego.ContextNoBody) (any, error) {
 	return rs.PetsService.DeletePets(c.PathParam("id"))
 }
 

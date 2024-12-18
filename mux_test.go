@@ -32,7 +32,7 @@ func TestUse(t *testing.T) {
 	t.Run("base", func(t *testing.T) {
 		s := NewServer()
 		Use(s, orderMiddleware("First!"))
-		Get(s, "/test", func(ctx *ContextNoBody) (string, error) {
+		Get(s, "/test", func(ctx ContextNoBody) (string, error) {
 			return "test", nil
 		})
 
@@ -49,7 +49,7 @@ func TestUse(t *testing.T) {
 		s := NewServer()
 		Use(s, orderMiddleware("First!"))
 		Use(s, orderMiddleware("Second!"))
-		Get(s, "/test", func(ctx *ContextNoBody) (string, error) {
+		Get(s, "/test", func(ctx ContextNoBody) (string, error) {
 			return "test", nil
 		})
 
@@ -66,7 +66,7 @@ func TestUse(t *testing.T) {
 		s := NewServer()
 		Use(s, orderMiddleware("First!"))
 		Use(s, orderMiddleware("Second!"), orderMiddleware("Third!"))
-		Get(s, "/test", func(ctx *ContextNoBody) (string, error) {
+		Get(s, "/test", func(ctx ContextNoBody) (string, error) {
 			return "test", nil
 		})
 
@@ -85,7 +85,7 @@ func TestUse(t *testing.T) {
 		group := Group(s, "/group")
 		Use(group, orderMiddleware("Second!"))
 		Use(group, orderMiddleware("Third!"))
-		Get(group, "/test", func(ctx *ContextNoBody) (string, error) {
+		Get(group, "/test", func(ctx ContextNoBody) (string, error) {
 			return "test", nil
 		})
 
@@ -123,7 +123,7 @@ func TestUseStd(t *testing.T) {
 
 func TestAll(t *testing.T) {
 	s := NewServer()
-	All(s, "/test", func(ctx *ContextNoBody) (string, error) {
+	All(s, "/test", func(ctx ContextNoBody) (string, error) {
 		return "test", nil
 	})
 
@@ -150,7 +150,7 @@ func TestAll(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	s := NewServer()
-	Get(s, "/test", func(ctx *ContextNoBody) (string, error) {
+	Get(s, "/test", func(ctx ContextNoBody) (string, error) {
 		return "test", nil
 	})
 
@@ -165,7 +165,7 @@ func TestGet(t *testing.T) {
 
 func TestPost(t *testing.T) {
 	s := NewServer()
-	Post(s, "/test", func(ctx *ContextNoBody) (string, error) {
+	Post(s, "/test", func(ctx ContextNoBody) (string, error) {
 		return "test", nil
 	})
 
@@ -180,7 +180,7 @@ func TestPost(t *testing.T) {
 
 func TestPut(t *testing.T) {
 	s := NewServer()
-	Put(s, "/test", func(ctx *ContextNoBody) (string, error) {
+	Put(s, "/test", func(ctx ContextNoBody) (string, error) {
 		return "test", nil
 	})
 
@@ -195,7 +195,7 @@ func TestPut(t *testing.T) {
 
 func TestPatch(t *testing.T) {
 	s := NewServer()
-	Patch(s, "/test", func(ctx *ContextNoBody) (string, error) {
+	Patch(s, "/test", func(ctx ContextNoBody) (string, error) {
 		return "test", nil
 	})
 
@@ -210,7 +210,7 @@ func TestPatch(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	s := NewServer()
-	Delete(s, "/test", func(ctx *ContextNoBody) (string, error) {
+	Delete(s, "/test", func(ctx ContextNoBody) (string, error) {
 		return "test", nil
 	})
 
@@ -359,7 +359,7 @@ func TestRegister(t *testing.T) {
 	t.Run("register route", func(t *testing.T) {
 		s := NewServer()
 
-		route := Register(s, Route[any, any]{
+		route := Register(s, Route[any, any, any]{
 			BaseRoute: BaseRoute{
 				Path:   "/test",
 				Method: http.MethodGet,
@@ -372,7 +372,7 @@ func TestRegister(t *testing.T) {
 	t.Run("register route with operation pre-created", func(t *testing.T) {
 		s := NewServer()
 
-		route := Register(s, Route[any, any]{
+		route := Register(s, Route[any, any, any]{
 			BaseRoute: BaseRoute{
 				Path:   "/test",
 				Method: http.MethodGet,
@@ -395,7 +395,7 @@ func TestRegister(t *testing.T) {
 	t.Run("register route with operation pre-created but with overrides", func(t *testing.T) {
 		s := NewServer()
 
-		route := Register(s, Route[any, any]{
+		route := Register(s, Route[any, any, any]{
 			BaseRoute: BaseRoute{
 				Path:   "/test",
 				Method: http.MethodGet,
@@ -431,7 +431,7 @@ func TestGroupInheritance(t *testing.T) {
 	)
 
 	t.Run("group inheritance", func(t *testing.T) {
-		route := Get(group2, "/test", func(ctx *ContextNoBody) (string, error) {
+		route := Get(group2, "/test", func(ctx ContextNoBody) (string, error) {
 			return "test", nil
 		})
 
@@ -448,7 +448,7 @@ func TestGroupTagsOnRoute(t *testing.T) {
 		s := NewServer(
 			WithRouteOptions(OptionTags("my-server-tag")),
 		)
-		route := Get(s, "/path", func(ctx *ContextNoBody) (string, error) {
+		route := Get(s, "/path", func(ctx ContextNoBody) (string, error) {
 			return "test", nil
 		})
 		require.Equal(t, []string{"my-server-tag"}, route.Operation.Tags)
@@ -459,7 +459,7 @@ func TestGroupTagsOnRoute(t *testing.T) {
 			WithRouteOptions(OptionTags("my-server-tag")),
 		)
 
-		route := Get(s, "/path", func(ctx *ContextNoBody) (string, error) {
+		route := Get(s, "/path", func(ctx ContextNoBody) (string, error) {
 			return "test", nil
 		},
 			OptionTags("my-route-tag"),
@@ -483,9 +483,9 @@ func TestGroupTagsOnRoute(t *testing.T) {
 func TestHideOpenapiRoutes(t *testing.T) {
 	t.Run("hide main server", func(t *testing.T) {
 		s := NewServer()
-		Get(s, "/not-hidden", func(ctx *ContextNoBody) (string, error) { return "", nil })
+		Get(s, "/not-hidden", func(ctx ContextNoBody) (string, error) { return "", nil })
 		s.Hide()
-		Get(s, "/test", func(ctx *ContextNoBody) (string, error) { return "", nil })
+		Get(s, "/test", func(ctx ContextNoBody) (string, error) { return "", nil })
 
 		require.Equal(t, s.DisableOpenapi, true)
 		require.True(t, s.OpenAPI.Description().Paths.Find("/not-hidden") != nil)
@@ -494,10 +494,10 @@ func TestHideOpenapiRoutes(t *testing.T) {
 
 	t.Run("hide group", func(t *testing.T) {
 		s := NewServer()
-		Get(s, "/not-hidden", func(ctx *ContextNoBody) (string, error) { return "", nil })
+		Get(s, "/not-hidden", func(ctx ContextNoBody) (string, error) { return "", nil })
 
 		g := Group(s, "/group").Hide()
-		Get(g, "/test", func(ctx *ContextNoBody) (string, error) { return "", nil })
+		Get(g, "/test", func(ctx ContextNoBody) (string, error) { return "", nil })
 
 		require.Equal(t, g.DisableOpenapi, true)
 		require.True(t, s.OpenAPI.Description().Paths.Find("/not-hidden") != nil)
@@ -507,10 +507,10 @@ func TestHideOpenapiRoutes(t *testing.T) {
 	t.Run("hide group but not other group", func(t *testing.T) {
 		s := NewServer()
 		g := Group(s, "/group").Hide()
-		Get(g, "/test", func(ctx *ContextNoBody) (string, error) { return "test", nil })
+		Get(g, "/test", func(ctx ContextNoBody) (string, error) { return "test", nil })
 
 		g2 := Group(s, "/group2")
-		Get(g2, "/test", func(ctx *ContextNoBody) (string, error) { return "test", nil })
+		Get(g2, "/test", func(ctx ContextNoBody) (string, error) { return "test", nil })
 
 		require.Equal(t, true, g.DisableOpenapi)
 		require.Equal(t, false, g2.DisableOpenapi)
@@ -521,10 +521,10 @@ func TestHideOpenapiRoutes(t *testing.T) {
 	t.Run("hide group but show sub group", func(t *testing.T) {
 		s := NewServer()
 		g := Group(s, "/group").Hide()
-		Get(g, "/test", func(ctx *ContextNoBody) (string, error) { return "test", nil })
+		Get(g, "/test", func(ctx ContextNoBody) (string, error) { return "test", nil })
 
 		g2 := Group(g, "/sub").Show()
-		Get(g2, "/test", func(ctx *ContextNoBody) (string, error) { return "test", nil })
+		Get(g2, "/test", func(ctx ContextNoBody) (string, error) { return "test", nil })
 
 		require.Equal(t, true, g.DisableOpenapi)
 		require.True(t, s.OpenAPI.Description().Paths.Find("/group/test") == nil)
@@ -539,7 +539,7 @@ func BenchmarkRequest(b *testing.B) {
 
 	b.Run("fuego server and fuego post", func(b *testing.B) {
 		s := NewServer()
-		Post(s, "/test", func(c *ContextWithBody[MyStruct]) (Resp, error) {
+		Post(s, "/test", func(c ContextWithBody[MyStruct]) (Resp, error) {
 			body, err := c.Body()
 			if err != nil {
 				return Resp{}, err
@@ -628,24 +628,24 @@ func TestGroup(t *testing.T) {
 
 	main := Group(s, "/")
 	Use(main, dummyMiddleware) // middleware is scoped to the group
-	Get(main, "/main", func(ctx *ContextNoBody) (string, error) {
+	Get(main, "/main", func(ctx ContextNoBody) (string, error) {
 		return "main", nil
 	})
 
 	group1 := Group(s, "/group")
-	Get(group1, "/route1", func(ctx *ContextNoBody) (string, error) {
+	Get(group1, "/route1", func(ctx ContextNoBody) (string, error) {
 		return "route1", nil
 	})
 
 	group2 := Group(s, "/group2")
 	Use(group2, dummyMiddleware) // middleware is scoped to the group
-	Get(group2, "/route2", func(ctx *ContextNoBody) (string, error) {
+	Get(group2, "/route2", func(ctx ContextNoBody) (string, error) {
 		return "route2", nil
 	})
 
 	subGroup := Group(group1, "/sub")
 
-	Get(subGroup, "/route3", func(ctx *ContextNoBody) (string, error) {
+	Get(subGroup, "/route3", func(ctx ContextNoBody) (string, error) {
 		return "route3", nil
 	})
 
@@ -754,7 +754,7 @@ func TestGroupTags(t *testing.T) {
 
 func ExampleContextNoBody_SetCookie() {
 	s := NewServer()
-	Get(s, "/test", func(c *ContextNoBody) (string, error) {
+	Get(s, "/test", func(c ContextNoBody) (string, error) {
 		c.SetCookie(http.Cookie{
 			Name:  "name",
 			Value: "value",
@@ -777,7 +777,7 @@ func ExampleContextNoBody_SetCookie() {
 
 func ExampleContextNoBody_SetHeader() {
 	s := NewServer()
-	Get(s, "/test", func(c *ContextNoBody) (string, error) {
+	Get(s, "/test", func(c ContextNoBody) (string, error) {
 		c.SetHeader("X-Test", "test")
 		return "test", nil
 	})
@@ -804,13 +804,13 @@ func TestNameFromNamespace(t *testing.T) {
 		name string
 
 		opts           []func(string) string
-		route          Route[any, any]
+		route          Route[any, any, any]
 		expectedOutput string
 	}{
 		{
 			name: "base",
 
-			route: Route[any, any]{
+			route: Route[any, any, any]{
 				BaseRoute: BaseRoute{
 					FullName: "pkg.test.MyFunc1",
 				},
@@ -820,7 +820,7 @@ func TestNameFromNamespace(t *testing.T) {
 		{
 			name: "with camelToHuman",
 
-			route: Route[any, any]{
+			route: Route[any, any, any]{
 				BaseRoute: BaseRoute{
 					FullName: "pkg.test.MyFunc1",
 				},
@@ -833,7 +833,7 @@ func TestNameFromNamespace(t *testing.T) {
 		{
 			name: "with inline opt",
 
-			route: Route[any, any]{
+			route: Route[any, any, any]{
 				BaseRoute: BaseRoute{
 					FullName: "pkg.test.MyFunc1",
 				},
@@ -849,7 +849,7 @@ func TestNameFromNamespace(t *testing.T) {
 		{
 			name: "with wrapped func",
 
-			route: Route[any, any]{
+			route: Route[any, any, any]{
 				BaseRoute: BaseRoute{
 					FullName: "pkg.test.MyFunc1",
 				},

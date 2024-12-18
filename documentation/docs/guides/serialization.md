@@ -61,7 +61,7 @@ If you just want to read the body of the request as a byte slice, you can use th
 Don't forget to set the request `Content-Type` header to `application/octet-stream`.
 
 ```go
-fuego.Put(s, "/blob", func(c *fuego.ContextWithBody[[]byte]) (any, error) {
+fuego.Put(s, "/blob", func(c fuego.ContextWithBody[[]byte]) (any, error) {
 	body, err := c.Body()
 	if err != nil {
 		return nil, err

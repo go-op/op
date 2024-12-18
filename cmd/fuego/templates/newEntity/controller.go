@@ -24,7 +24,7 @@ func (rs NewEntityResources) getAllNewEntity(c fuego.ContextNoBody) ([]NewEntity
 	return rs.NewEntityService.GetAllNewEntity()
 }
 
-func (rs NewEntityResources) postNewEntity(c *fuego.ContextWithBody[NewEntityCreate]) (NewEntity, error) {
+func (rs NewEntityResources) postNewEntity(c fuego.ContextWithBody[NewEntityCreate]) (NewEntity, error) {
 	body, err := c.Body()
 	if err != nil {
 		return NewEntity{}, err
@@ -39,7 +39,7 @@ func (rs NewEntityResources) getNewEntity(c fuego.ContextNoBody) (NewEntity, err
 	return rs.NewEntityService.GetNewEntity(id)
 }
 
-func (rs NewEntityResources) putNewEntity(c *fuego.ContextWithBody[NewEntityUpdate]) (NewEntity, error) {
+func (rs NewEntityResources) putNewEntity(c fuego.ContextWithBody[NewEntityUpdate]) (NewEntity, error) {
 	id := c.PathParam("id")
 
 	body, err := c.Body()
@@ -50,6 +50,6 @@ func (rs NewEntityResources) putNewEntity(c *fuego.ContextWithBody[NewEntityUpda
 	return rs.NewEntityService.UpdateNewEntity(id, body)
 }
 
-func (rs NewEntityResources) deleteNewEntity(c *fuego.ContextNoBody) (any, error) {
+func (rs NewEntityResources) deleteNewEntity(c fuego.ContextNoBody) (any, error) {
 	return rs.NewEntityService.DeleteNewEntity(c.PathParam("id"))
 }
