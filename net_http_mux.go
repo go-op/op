@@ -6,8 +6,6 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
-
-	"github.com/getkin/kin-openapi/openapi3"
 )
 
 // Group allows grouping routes under a common path.
