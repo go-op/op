@@ -47,6 +47,10 @@ func (rs PetsResources) Routes(s *fuego.Server) {
 		option.Description("Get all pets"),
 	)
 
+	fuego.Post(petsGroup, "/generic-response", rs.genericRequestAndResponse,
+		option.Description("Generic request and response. Showcase Fuego's support for generic input & output."),
+	)
+
 	fuego.Get(petsGroup, "/by-age", rs.getAllPetsByAge,
 		option.Description("Returns an array of pets grouped by age"),
 		option.Middleware(dummyMiddleware),
@@ -95,6 +99,24 @@ func (rs PetsResources) getAllPets(c fuego.ContextNoBody) ([]models.Pets, error)
 	pageWithTypo := c.QueryParamInt("page-with-typo") // this shows a warning in the logs because "page-with-typo" is not a declared query param
 	slog.Info("query params", "page", page, "page-with-typo", pageWithTypo)
 	return rs.PetsService.GetAllPets()
+}
+
+type GenericInput[T any] struct {
+	Thing string `json:"thing"`
+	Data  T      `json:"data"`
+}
+
+func (rs PetsResources) genericRequestAndResponse(c fuego.ContextWithBody[GenericInput[models.Pets]]) (*models.BareSuccessResponse[models.Pets], error) {
+	body, err := c.Body()
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.BareSuccessResponse[models.Pets]{
+		StatusCode: 200,
+		Result:     models.Pets{ID: "john", Name: body.Data.Name},
+		Message:    "success",
+	}, nil
 }
 
 func (rs PetsResources) filterPets(c fuego.ContextNoBody) ([]models.Pets, error) {

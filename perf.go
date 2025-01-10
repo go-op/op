@@ -9,8 +9,8 @@ import (
 // Used in the Server-Timing header.
 type Timing struct {
 	Name string
-	Dur  time.Duration
 	Desc string
+	Dur  time.Duration
 }
 
 // String returns a string representation of a Timing, as defined in https://www.w3.org/TR/server-timing/#the-server-timing-header-field

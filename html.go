@@ -57,11 +57,11 @@ type H map[string]any
 
 // StdRenderer renders a template using the standard library templating engine.
 type StdRenderer struct {
-	templateToExecute string
-	templates         *template.Template
-	layoutsGlobs      []string
 	fs                fs.FS
 	data              any
+	templates         *template.Template
+	templateToExecute string
+	layoutsGlobs      []string
 }
 
 var _ CtxRenderer = StdRenderer{}

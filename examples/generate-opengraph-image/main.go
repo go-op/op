@@ -21,9 +21,11 @@ var optionReturnsPNG = func(br *fuego.BaseRoute) {
 
 func main() {
 	s := fuego.NewServer(
-		fuego.WithOpenAPIConfig(fuego.OpenAPIConfig{
-			PrettyFormatJson: true,
-		}),
+		fuego.WithEngineOptions(
+			fuego.WithOpenAPIConfig(fuego.OpenAPIConfig{
+				PrettyFormatJSON: true,
+			}),
+		),
 	)
 
 	fuego.GetStd(s, "/{title}", controller.OpenGraphHandler,

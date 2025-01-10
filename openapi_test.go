@@ -313,10 +313,12 @@ func TestServer_OutputOpenApiSpec(t *testing.T) {
 	docPath := "doc/openapi.json"
 	t.Run("base", func(t *testing.T) {
 		s := NewServer(
-			WithOpenAPIConfig(
-				OpenAPIConfig{
-					JsonFilePath: docPath,
-				},
+			WithEngineOptions(
+				WithOpenAPIConfig(
+					OpenAPIConfig{
+						JSONFilePath: docPath,
+					},
+				),
 			),
 		)
 		Get(s, "/", func(ContextNoBody) (MyStruct, error) {
@@ -334,11 +336,11 @@ func TestServer_OutputOpenApiSpec(t *testing.T) {
 	})
 	t.Run("do not print file", func(t *testing.T) {
 		s := NewServer(
-			WithOpenAPIConfig(
-				OpenAPIConfig{
-					JsonFilePath:     docPath,
+			WithEngineOptions(
+				WithOpenAPIConfig(OpenAPIConfig{
+					JSONFilePath:     docPath,
 					DisableLocalSave: true,
-				},
+				}),
 			),
 		)
 		Get(s, "/", func(ContextNoBody) (MyStruct, error) {
@@ -354,12 +356,14 @@ func TestServer_OutputOpenApiSpec(t *testing.T) {
 	})
 	t.Run("swagger disabled", func(t *testing.T) {
 		s := NewServer(
-			WithOpenAPIConfig(
-				OpenAPIConfig{
-					JsonFilePath:     docPath,
-					DisableLocalSave: true,
-					DisableSwagger:   true,
-				},
+			WithEngineOptions(
+				WithOpenAPIConfig(
+					OpenAPIConfig{
+						JSONFilePath:     docPath,
+						DisableLocalSave: true,
+						Disabled:         true,
+					},
+				),
 			),
 		)
 		Get(s, "/", func(ContextNoBody) (MyStruct, error) {
@@ -376,11 +380,13 @@ func TestServer_OutputOpenApiSpec(t *testing.T) {
 	})
 	t.Run("pretty format json file", func(t *testing.T) {
 		s := NewServer(
-			WithOpenAPIConfig(
-				OpenAPIConfig{
-					JsonFilePath:     docPath,
-					PrettyFormatJson: true,
-				},
+			WithEngineOptions(
+				WithOpenAPIConfig(
+					OpenAPIConfig{
+						JSONFilePath:     docPath,
+						PrettyFormatJSON: true,
+					},
+				),
 			),
 		)
 		Get(s, "/", func(ContextNoBody) (MyStruct, error) {
@@ -453,26 +459,26 @@ func BenchmarkServer_generateOpenAPI(b *testing.B) {
 	}
 }
 
-func TestValidateJsonSpecUrl(t *testing.T) {
-	require.Equal(t, true, validateJsonSpecUrl("/path/to/jsonSpec.json"))
-	require.Equal(t, true, validateJsonSpecUrl("/spec.json"))
-	require.Equal(t, true, validateJsonSpecUrl("/path_/jsonSpec.json"))
-	require.Equal(t, false, validateJsonSpecUrl("path/to/jsonSpec.json"))
-	require.Equal(t, false, validateJsonSpecUrl("/path/to/jsonSpec"))
-	require.Equal(t, false, validateJsonSpecUrl("/path/to/jsonSpec.jsn"))
+func TestValidateJsonSpecURL(t *testing.T) {
+	require.Equal(t, true, validateSpecURL("/path/to/jsonSpec.json"))
+	require.Equal(t, true, validateSpecURL("/spec.json"))
+	require.Equal(t, true, validateSpecURL("/path_/jsonSpec.json"))
+	require.Equal(t, false, validateSpecURL("path/to/jsonSpec.json"))
+	require.Equal(t, false, validateSpecURL("/path/to/jsonSpec"))
+	require.Equal(t, false, validateSpecURL("/path/to/jsonSpec.jsn"))
 }
 
 func TestValidateSwaggerUrl(t *testing.T) {
-	require.Equal(t, true, validateSwaggerUrl("/path/to/jsonSpec"))
-	require.Equal(t, true, validateSwaggerUrl("/swagger"))
-	require.Equal(t, true, validateSwaggerUrl("/Super-useful_swagger-2000"))
-	require.Equal(t, true, validateSwaggerUrl("/Super-useful_swagger-"))
-	require.Equal(t, true, validateSwaggerUrl("/Super-useful_swagger__"))
-	require.Equal(t, true, validateSwaggerUrl("/Super-useful_swaggeR"))
-	require.Equal(t, false, validateSwaggerUrl("/spec.json"))
-	require.Equal(t, false, validateSwaggerUrl("/path_/swagger.json"))
-	require.Equal(t, false, validateSwaggerUrl("path/to/jsonSpec."))
-	require.Equal(t, false, validateSwaggerUrl("path/to/jsonSpec%"))
+	require.Equal(t, true, validateSwaggerURL("/path/to/jsonSpec"))
+	require.Equal(t, true, validateSwaggerURL("/swagger"))
+	require.Equal(t, true, validateSwaggerURL("/Super-useful_swagger-2000"))
+	require.Equal(t, true, validateSwaggerURL("/Super-useful_swagger-"))
+	require.Equal(t, true, validateSwaggerURL("/Super-useful_swagger__"))
+	require.Equal(t, true, validateSwaggerURL("/Super-useful_swaggeR"))
+	require.Equal(t, false, validateSwaggerURL("/spec.json"))
+	require.Equal(t, false, validateSwaggerURL("/path_/swagger.json"))
+	require.Equal(t, false, validateSwaggerURL("path/to/jsonSpec."))
+	require.Equal(t, false, validateSwaggerURL("path/to/jsonSpec%"))
 }
 
 func TestLocalSave(t *testing.T) {
@@ -493,10 +499,12 @@ func TestLocalSave(t *testing.T) {
 
 func TestAutoGroupTags(t *testing.T) {
 	s := NewServer(
-		WithOpenAPIConfig(OpenAPIConfig{
-			DisableLocalSave: true,
-			DisableSwagger:   true,
-		}),
+		WithEngineOptions(
+			WithOpenAPIConfig(OpenAPIConfig{
+				DisableLocalSave: true,
+				Disabled:         true,
+			}),
+		),
 	)
 	Get(s, "/a", func(ContextNoBody) (MyStruct, error) {
 		return MyStruct{}, nil

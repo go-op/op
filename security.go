@@ -100,8 +100,8 @@ func (security Security) ValidateToken(token string) (*jwt.Token, error) {
 }
 
 type AutoAuthConfig struct {
-	Enabled        bool
 	VerifyUserInfo func(user, password string) (jwt.Claims, error) // Must check the username and password, and return the claims
+	Enabled        bool
 }
 
 type contextKey string

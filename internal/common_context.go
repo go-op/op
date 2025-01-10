@@ -139,10 +139,10 @@ func (e QueryParamNotFoundError) Error() string {
 }
 
 type QueryParamInvalidTypeError struct {
+	Err          error
 	ParamName    string
 	ParamValue   string
 	ExpectedType string
-	Err          error
 }
 
 func (e QueryParamInvalidTypeError) Error() string {

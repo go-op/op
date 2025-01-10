@@ -332,10 +332,10 @@ func OptionAddError(code int, description string, errorType ...any) func(*BaseRo
 // Response represents a fuego.Response that can be used
 // when setting custom response types on routes
 type Response struct {
-	// content-type of the response i.e application/json
-	ContentTypes []string
 	// user provided type
 	Type any
+	// content-type of the response i.e application/json
+	ContentTypes []string
 }
 
 // AddResponse adds a response to a route by status code

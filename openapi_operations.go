@@ -45,7 +45,7 @@ func (o *OpenAPI) buildOpenapi3Response(description string, response Response) *
 
 // openAPIResponse describes a response error in the OpenAPI spec.
 type openAPIResponse struct {
-	Response
-	Code        int
 	Description string
+	Response
+	Code int
 }

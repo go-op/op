@@ -24,6 +24,31 @@ func TestGetAllPets(t *testing.T) {
 	})
 }
 
+func TestGenericController(t *testing.T) {
+	t.Run("generic controller - validation issue", func(t *testing.T) {
+		s := lib.NewPetStoreServer()
+
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("POST", "/pets/generic-response", nil)
+
+		s.Mux.ServeHTTP(w, r)
+
+		require.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("generic controller - success", func(t *testing.T) {
+		s := lib.NewPetStoreServer()
+
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("POST", "/pets/generic-response", strings.NewReader(`{"data": {"id": "1", "name": "Napoleon"}}`))
+
+		s.Mux.ServeHTTP(w, r)
+
+		t.Log(w.Body.String())
+		require.Equal(t, http.StatusOK, w.Code)
+	})
+}
+
 func TestGetAllPetsStd(t *testing.T) {
 	t.Run("can get all pets std", func(t *testing.T) {
 		s := lib.NewPetStoreServer()

@@ -40,8 +40,16 @@ func NewBaseRoute(method, path string, handler any, openapi *OpenAPI, options ..
 // BaseRoute is the base struct for all routes in Fuego.
 // It contains the OpenAPI operation and other metadata.
 type BaseRoute struct {
+	// handler executed for this route
+	Handler http.Handler
+
 	// OpenAPI operation
 	Operation *openapi3.Operation
+
+	// Ref to the whole OpenAPI spec. Be careful when changing directly its value directly.
+	OpenAPI *OpenAPI
+
+	Params map[string]OpenAPIParam
 
 	// HTTP method (GET, POST, PUT, PATCH, DELETE)
 	Method string
@@ -50,21 +58,18 @@ type BaseRoute struct {
 	Path string
 
 	// namespace and name of the function to execute
-	FullName    string
-	Params      map[string]OpenAPIParam
-	Middlewares []func(http.Handler) http.Handler
+	FullName string
 
 	// Content types accepted for the request body. If nil, all content types (*/*) are accepted.
 	AcceptedContentTypes []string
 
-	// If true, the route will not be documented in the OpenAPI spec
-	Hidden bool
+	Middlewares []func(http.Handler) http.Handler
 
 	// Default status code for the response
 	DefaultStatusCode int
 
-	// Ref to the whole OpenAPI spec. Be careful when changing directly its value directly.
-	OpenAPI *OpenAPI
+	// If true, the route will not be documented in the OpenAPI spec
+	Hidden bool
 
 	// Override the default description
 	overrideDescription bool

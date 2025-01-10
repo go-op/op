@@ -24,6 +24,12 @@ linters-settings:
     locale: "US"
     error: true
 
+  govet:
+    enable-all: true
+    disable:
+      - shadow
+      - fieldalignment
+
   gofumpt:
     extra-rules: true
   staticcheck:

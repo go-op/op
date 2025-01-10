@@ -1,6 +1,105 @@
 {
 	"components": {
 		"schemas": {
+			"BareSuccessResponse_models.Pets": {
+				"description": "BareSuccessResponse_models.Pets schema",
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"result": {
+						"properties": {
+							"age": {
+								"description": "Age of the pet, in years",
+								"example": 2,
+								"type": "integer"
+							},
+							"id": {
+								"example": "pet-123456",
+								"type": "string"
+							},
+							"is_adopted": {
+								"description": "Is the pet adopted",
+								"type": "boolean"
+							},
+							"name": {
+								"example": "Napoleon",
+								"type": "string"
+							},
+							"references": {
+								"properties": {
+									"type": {
+										"description": "type of reference",
+										"example": "pet-123456",
+										"type": "string"
+									},
+									"value": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						},
+						"required": [
+							"id",
+							"name"
+						],
+						"type": "object"
+					},
+					"statusCode": {
+						"type": "integer"
+					}
+				},
+				"type": "object"
+			},
+			"GenericInput_models.Pets": {
+				"description": "GenericInput_models.Pets schema",
+				"properties": {
+					"data": {
+						"properties": {
+							"age": {
+								"description": "Age of the pet, in years",
+								"example": 2,
+								"type": "integer"
+							},
+							"id": {
+								"example": "pet-123456",
+								"type": "string"
+							},
+							"is_adopted": {
+								"description": "Is the pet adopted",
+								"type": "boolean"
+							},
+							"name": {
+								"example": "Napoleon",
+								"type": "string"
+							},
+							"references": {
+								"properties": {
+									"type": {
+										"description": "type of reference",
+										"example": "pet-123456",
+										"type": "string"
+									},
+									"value": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						},
+						"required": [
+							"id",
+							"name"
+						],
+						"type": "object"
+					},
+					"thing": {
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
 			"HTTPError": {
 				"description": "HTTPError schema",
 				"properties": {
@@ -806,6 +905,109 @@
 					}
 				},
 				"summary": "get pet by name",
+				"tags": [
+					"pets"
+				]
+			}
+		},
+		"/pets/generic-response": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/go-fuego/fuego/examples/petstore/controllers.PetsResources.genericRequestAndResponse`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nGeneric request and response. Showcase Fuego's support for generic input \u0026 output.",
+				"operationId": "POST_/pets/generic-response",
+				"parameters": [
+					{
+						"description": "header description",
+						"in": "header",
+						"name": "X-Header",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/GenericInput_models.Pets"
+							}
+						}
+					},
+					"description": "Request body for controller.GenericInput[github.com/go-fuego/fuego/examples/petstore/models.Pets]",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BareSuccessResponse_models.Pets"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/BareSuccessResponse_models.Pets"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"204": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NoContent"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/NoContent"
+								}
+							}
+						},
+						"description": "No Content"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "generic request and response",
 				"tags": [
 					"pets"
 				]

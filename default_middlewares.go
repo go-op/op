@@ -31,12 +31,12 @@ var defaultLoggingConfig = LoggingConfig{
 // override the default request ID generator (UUID) with a custom one that
 // appends the current Unix time in nanoseconds for response logs
 type LoggingConfig struct {
+	// Optional custom request ID generator
+	RequestIDFunc func() string
 	// If true, request logging is disabled
 	DisableRequest bool
 	// If true, response logging is disabled
 	DisableResponse bool
-	// Optional custom request ID generator
-	RequestIDFunc func() string
 }
 
 func (l *LoggingConfig) Disabled() bool {

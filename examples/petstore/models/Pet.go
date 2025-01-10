@@ -7,6 +7,13 @@ import (
 	"github.com/go-fuego/fuego"
 )
 
+// Example of generic response
+type BareSuccessResponse[Res any] struct {
+	StatusCode int    `json:"statusCode"`
+	Result     Res    `json:"result"`
+	Message    string `json:"message"`
+}
+
 type Pets struct {
 	ID         string     `json:"id" validate:"required" example:"pet-123456"`
 	Name       string     `json:"name" validate:"required" example:"Napoleon"`

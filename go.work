@@ -12,6 +12,8 @@ use (
 	./examples/gin-compat
 	./examples/hello-world
 	./examples/openapi
+	./examples/with-listener
+	./examples/petstore
 	./extra/fuegogin
 	./extra/markdown
 	./middleware/basicauth

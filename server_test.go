@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -74,62 +75,79 @@ func TestWithXML(t *testing.T) {
 func TestWithOpenAPIConfig(t *testing.T) {
 	t.Run("with default values", func(t *testing.T) {
 		s := NewServer(
-			WithOpenAPIConfig(OpenAPIConfig{}),
+			WithOpenAPIServerConfig(OpenAPIServerConfig{}),
 		)
 
-		require.Equal(t, "/swagger", s.OpenAPIConfig.SwaggerUrl)
-		require.Equal(t, "/swagger/openapi.json", s.OpenAPIConfig.JsonUrl)
-		require.Equal(t, "doc/openapi.json", s.OpenAPIConfig.JsonFilePath)
-		require.False(t, s.OpenAPIConfig.PrettyFormatJson)
+		require.Equal(t, "/swagger", s.OpenAPIServerConfig.SwaggerURL)
+		require.Equal(t, "/swagger/openapi.json", s.OpenAPIServerConfig.SpecURL)
+		require.Equal(t, "doc/openapi.json", s.OpenAPIConfig.JSONFilePath)
+		require.False(t, s.OpenAPIConfig.PrettyFormatJSON)
 	})
 
 	t.Run("with custom values", func(t *testing.T) {
 		s := NewServer(
-			WithOpenAPIConfig(OpenAPIConfig{
-				SwaggerUrl:       "/api",
-				JsonUrl:          "/api/openapi.json",
-				JsonFilePath:     "openapi.json",
-				DisableSwagger:   true,
-				DisableLocalSave: true,
-				PrettyFormatJson: true,
+			WithOpenAPIServerConfig(OpenAPIServerConfig{
+				SwaggerURL: "/api",
+				SpecURL:    "/api/openapi.json",
 			}),
+			WithEngineOptions(
+				WithOpenAPIConfig(
+					OpenAPIConfig{
+						JSONFilePath:     "openapi.json",
+						DisableLocalSave: true,
+						PrettyFormatJSON: true,
+						Disabled:         true,
+					}),
+			),
 		)
 
-		require.Equal(t, "/api", s.OpenAPIConfig.SwaggerUrl)
-		require.Equal(t, "/api/openapi.json", s.OpenAPIConfig.JsonUrl)
-		require.Equal(t, "openapi.json", s.OpenAPIConfig.JsonFilePath)
-		require.True(t, s.OpenAPIConfig.DisableSwagger)
+		require.Equal(t, "/api", s.OpenAPIServerConfig.SwaggerURL)
+		require.Equal(t, "/api/openapi.json", s.OpenAPIServerConfig.SpecURL)
+		require.Equal(t, "openapi.json", s.OpenAPIConfig.JSONFilePath)
+		require.True(t, s.Engine.OpenAPIConfig.Disabled)
 		require.True(t, s.OpenAPIConfig.DisableLocalSave)
-		require.True(t, s.OpenAPIConfig.PrettyFormatJson)
+		require.True(t, s.OpenAPIConfig.PrettyFormatJSON)
 	})
 
 	t.Run("with invalid local path values", func(t *testing.T) {
 		t.Run("with invalid path", func(t *testing.T) {
 			NewServer(
-				WithOpenAPIConfig(OpenAPIConfig{
-					JsonFilePath: "path/to/jsonSpec",
-					SwaggerUrl:   "p   i",
-					JsonUrl:      "pi/op  enapi.json",
+				WithOpenAPIServerConfig(OpenAPIServerConfig{
+					SwaggerURL: "p   i",
+					SpecURL:    "pi/op  enapi.json",
 				}),
+				WithEngineOptions(
+					WithOpenAPIConfig(OpenAPIConfig{
+						JSONFilePath: "path/to/jsonSpec",
+					}),
+				),
 			)
 		})
 		t.Run("with invalid url", func(t *testing.T) {
 			NewServer(
-				WithOpenAPIConfig(OpenAPIConfig{
-					JsonFilePath: "path/to/jsonSpec.json",
-					JsonUrl:      "pi/op  enapi.json",
-					SwaggerUrl:   "p   i",
+				WithOpenAPIServerConfig(OpenAPIServerConfig{
+					SpecURL:    "pi/op  enapi.json",
+					SwaggerURL: "p   i",
 				}),
+				WithEngineOptions(
+					WithOpenAPIConfig(OpenAPIConfig{
+						JSONFilePath: "path/to/jsonSpec.json",
+					}),
+				),
 			)
 		})
 
 		t.Run("with invalid url", func(t *testing.T) {
 			NewServer(
-				WithOpenAPIConfig(OpenAPIConfig{
-					JsonFilePath: "path/to/jsonSpec.json",
-					JsonUrl:      "/api/openapi.json",
-					SwaggerUrl:   "invalid path",
+				WithOpenAPIServerConfig(OpenAPIServerConfig{
+					SpecURL:    "/api/openapi.json",
+					SwaggerURL: "invalid path",
 				}),
+				WithEngineOptions(
+					WithOpenAPIConfig(OpenAPIConfig{
+						JSONFilePath: "path/to/jsonSpec.json",
+					}),
+				),
 			)
 		})
 	})
@@ -272,6 +290,7 @@ func TestWithoutStartupMessages(t *testing.T) {
 	)
 
 	require.True(t, s.disableStartupMessages)
+	require.True(t, s.Engine.OpenAPIConfig.DisableMessages)
 }
 
 func TestWithoutAutoGroupTags(t *testing.T) {
@@ -325,6 +344,22 @@ func TestWithRequestContentType(t *testing.T) {
 		require.Equal(t, "#/components/schemas/ReqBody", content.Get("application/xml").Schema.Ref)
 		_, ok := s.OpenAPI.Description().Components.RequestBodies["ReqBody"]
 		require.False(t, ok)
+	})
+}
+
+func TestWithListener(t *testing.T) {
+	t.Run("with custom listener", func(t *testing.T) {
+		listener, err := net.Listen("tcp", ":8080")
+		require.NoError(t, err)
+		s := NewServer(
+			WithListener(listener),
+		)
+		require.NotNil(t, s.listener)
+	})
+
+	t.Run("no custom listener", func(t *testing.T) {
+		s := NewServer()
+		require.Nil(t, s.listener)
 	})
 }
 

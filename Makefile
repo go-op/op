@@ -5,14 +5,14 @@ ci: fmt lint cover
 ci-full: ci dependencies-analyze openapi-check check-all-modules lint-markdown bench
 
 test: 
-	go test ./...
+	go test ./... ./examples/petstore/...
+
+cover:
+	go test -coverprofile=coverage.out ./... ./examples/petstore/...
+	go tool cover -func=coverage.out
 
 check-all-modules:
 	./check-all-modules.sh
-
-cover:
-	go test -coverprofile=coverage.out ./...
-	go tool cover -func=coverage.out
 
 cover-web: cover
 	go tool cover -html=coverage.out
@@ -21,7 +21,7 @@ bench:
 	go test -bench ./... -benchmem
 
 build:
-	go build -v ./...
+	go build -v ./... ./examples/petstore/...
 
 dependencies-analyze:
 	which govulncheck || go install golang.org/x/vuln/cmd/govulncheck@latest
