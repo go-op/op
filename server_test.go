@@ -367,10 +367,10 @@ func TestGroupParams(t *testing.T) {
 	t.Log(document.Paths.Find("/").Get.Parameters[0].Value.Name)
 	require.Len(t, document.Paths.Find("/").Get.Parameters, 1)
 	require.Equal(t, document.Paths.Find("/").Get.Parameters[0].Value.Name, "Accept")
-	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[1].Value.Name, "Accept")
-	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[0].Value.Name, "X-Test-Header")
-	require.Equal(t, document.Paths.Find("/api/test2").Get.Parameters[1].Value.Name, "Accept")
-	require.Equal(t, document.Paths.Find("/api/test2").Get.Parameters[0].Value.Name, "X-Test-Header")
+	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[0].Value.Name, "Accept")
+	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[1].Value.Name, "X-Test-Header")
+	require.Equal(t, document.Paths.Find("/api/test2").Get.Parameters[0].Value.Name, "Accept")
+	require.Equal(t, document.Paths.Find("/api/test2").Get.Parameters[1].Value.Name, "X-Test-Header")
 }
 
 func TestGroupHeaderParams(t *testing.T) {
@@ -384,8 +384,8 @@ func TestGroupHeaderParams(t *testing.T) {
 	require.Equal(t, "test-value", route.Operation.Parameters.GetByInAndName("header", "X-Test-Header").Description)
 
 	document := s.OutputOpenAPISpec()
-	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[1].Value.Name, "Accept")
-	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[0].Value.Name, "X-Test-Header")
+	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[0].Value.Name, "Accept")
+	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[1].Value.Name, "X-Test-Header")
 }
 
 func TestGroupCookieParams(t *testing.T) {
@@ -399,8 +399,8 @@ func TestGroupCookieParams(t *testing.T) {
 	require.Equal(t, "test-value", route.Operation.Parameters.GetByInAndName("cookie", "X-Test-Cookie").Description)
 
 	document := s.OutputOpenAPISpec()
-	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[1].Value.Name, "Accept")
-	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[0].Value.Name, "X-Test-Cookie")
+	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[0].Value.Name, "Accept")
+	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[1].Value.Name, "X-Test-Cookie")
 }
 
 func TestGroupQueryParam(t *testing.T) {
@@ -414,8 +414,8 @@ func TestGroupQueryParam(t *testing.T) {
 	require.Equal(t, "test-value", route.Operation.Parameters.GetByInAndName("query", "X-Test-Query").Description)
 
 	document := s.OutputOpenAPISpec()
-	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[1].Value.Name, "Accept")
-	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[0].Value.Name, "X-Test-Query")
+	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[0].Value.Name, "Accept")
+	require.Equal(t, document.Paths.Find("/api/test").Get.Parameters[1].Value.Name, "X-Test-Query")
 }
 
 func TestGroupParamsInChildGroup(t *testing.T) {
