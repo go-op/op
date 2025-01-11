@@ -37,6 +37,7 @@ func (s *Server) setup() error {
 		return err
 	}
 	go s.OutputOpenAPISpec()
+	RegisterOpenAPIRoutes(s.Engine, s)
 	s.printStartupMessage()
 
 	s.Server.Handler = s.Mux
@@ -61,7 +62,7 @@ func (s *Server) printStartupMessage() {
 	if !s.disableStartupMessages {
 		elapsed := time.Since(s.startTime)
 		slog.Debug("Server started in "+elapsed.String(), "info", "time between since server creation (fuego.NewServer) and server startup (fuego.Run). Depending on your implementation, there might be things that do not depend on fuego slowing start time")
-		slog.Info("Server running ✅ on "+s.url(), "started in", elapsed.String())
+		slog.Info("Server running ✅ on "+s.URL(), "started in", elapsed.String())
 	}
 }
 
@@ -72,7 +73,7 @@ func (s *Server) proto() string {
 	return "http"
 }
 
-func (s *Server) url() string {
+func (s *Server) URL() string {
 	return s.proto() + "://" + s.Server.Addr
 }
 
