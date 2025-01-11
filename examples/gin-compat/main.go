@@ -25,17 +25,17 @@ type HelloResponse struct {
 }
 
 func main() {
-	e, _ := server()
+	a := server()
 
 	fmt.Println("OpenAPI at at http://localhost:8980/swagger ✅")
 
-	err := e.Run(":8980")
+	err := a.Gin.Run(":8980")
 	if err != nil {
 		panic(err)
 	}
 }
 
-func server() (*gin.Engine, *fuego.OpenAPI) {
+func server() *fuegogin.Adaptor {
 	ginRouter := gin.Default()
 	engine := fuego.NewEngine()
 
@@ -81,10 +81,10 @@ func server() (*gin.Engine, *fuego.OpenAPI) {
 	)
 
 	// Serve the OpenAPI spec
-	ginRouter.GET("/openapi.json", serveOpenApiJSONDescription(engine.OpenAPI))
-	ginRouter.GET("/swagger", DefaultOpenAPIHandler("/openapi.json"))
+	a := &fuegogin.Adaptor{Engine: engine, Gin: ginRouter}
+	fuego.RegisterOpenAPIRoutes(a.Engine, a)
 
-	return ginRouter, engine.OpenAPI
+	return a
 }
 
 func (h *HelloRequest) InTransform(ctx context.Context) error {

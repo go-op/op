@@ -21,9 +21,9 @@ func TestUIHandler(t *testing.T) {
 	t.Run("works with DefaultOpenAPIHandler", func(t *testing.T) {
 		s := NewServer()
 
-		s.OutputOpenAPISpec()
+		s.Serve()
 
-		require.NotNil(t, s.OpenAPIServerConfig.UIHandler)
+		require.NotNil(t, s.OpenAPIConfig.UIHandler)
 
 		w := httptest.NewRecorder()
 		r := httptest.NewRequest("GET", "/swagger/index.html", nil)
@@ -43,7 +43,7 @@ func TestUIHandler(t *testing.T) {
 				},
 			}),
 		)
-		s.OutputOpenAPISpec()
+		s.Serve()
 
 		require.NotNil(t, s.OpenAPIServerConfig.UIHandler)
 
