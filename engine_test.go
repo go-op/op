@@ -37,4 +37,13 @@ func TestWithErrorHandler(t *testing.T) {
 			)
 		})
 	})
+
+	t.Run("disable error handler", func(t *testing.T) {
+		e := NewEngine(DisableErrorHandler())
+		err := NotFoundError{
+			Err: errors.New("Not Found"),
+		}
+		errResponse := e.ErrorHandler(err)
+		require.Equal(t, "Not Found", errResponse.Error())
+	})
 }

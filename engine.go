@@ -82,6 +82,13 @@ func WithErrorHandler(errorHandler func(err error) error) func(*Engine) {
 	}
 }
 
+// DisableErrorHandler overrides ErrorHandler with a simple pass-through
+func DisableErrorHandler() func(*Engine) {
+	return func(e *Engine) {
+		e.ErrorHandler = func(err error) error { return err }
+	}
+}
+
 // OutputOpenAPISpec takes the OpenAPI spec and outputs it to a JSON file
 func (e *Engine) OutputOpenAPISpec() []byte {
 	e.OpenAPI.computeTags()
