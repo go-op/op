@@ -26,7 +26,7 @@ func Post[T, B any](engine *fuego.Engine, ginRouter gin.IRouter, path string, ha
 }
 
 func handleFuego[T, B any](engine *fuego.Engine, ginRouter gin.IRouter, method, path string, fuegoHandler func(c fuego.ContextWithBody[B]) (T, error), options ...func(*fuego.BaseRoute)) *fuego.Route[T, B] {
-	baseRoute := fuego.NewBaseRoute(method, path, fuegoHandler, engine.OpenAPI, options...)
+	baseRoute := fuego.NewBaseRoute(method, path, fuegoHandler, engine, options...)
 	return fuego.Registers(engine, ginRouteRegisterer[T, B]{
 		ginRouter:  ginRouter,
 		route:      fuego.Route[T, B]{BaseRoute: baseRoute},
@@ -35,7 +35,7 @@ func handleFuego[T, B any](engine *fuego.Engine, ginRouter gin.IRouter, method, 
 }
 
 func handleGin(engine *fuego.Engine, ginRouter gin.IRouter, method, path string, ginHandler gin.HandlerFunc, options ...func(*fuego.BaseRoute)) *fuego.Route[any, any] {
-	baseRoute := fuego.NewBaseRoute(method, path, ginHandler, engine.OpenAPI, options...)
+	baseRoute := fuego.NewBaseRoute(method, path, ginHandler, engine, options...)
 	return fuego.Registers(engine, ginRouteRegisterer[any, any]{
 		ginRouter:  ginRouter,
 		route:      fuego.Route[any, any]{BaseRoute: baseRoute},

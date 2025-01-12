@@ -135,7 +135,7 @@ func PatchStd(s *Server, path string, controller func(http.ResponseWriter, *http
 }
 
 func registerFuegoController[T, B any](s *Server, method, path string, controller func(ContextWithBody[B]) (T, error), options ...func(*BaseRoute)) *Route[T, B] {
-	route := NewRoute[T, B](method, path, controller, s.OpenAPI, append(s.routeOptions, options...)...)
+	route := NewRoute[T, B](method, path, controller, s.Engine, append(s.routeOptions, options...)...)
 
 	acceptHeaderParameter := openapi3.NewHeaderParameter("Accept")
 	acceptHeaderParameter.Schema = openapi3.NewStringSchema().NewRef()
@@ -149,7 +149,7 @@ func registerFuegoController[T, B any](s *Server, method, path string, controlle
 }
 
 func registerStdController(s *Server, method, path string, controller func(http.ResponseWriter, *http.Request), options ...func(*BaseRoute)) *Route[any, any] {
-	route := NewRoute[any, any](method, path, controller, s.OpenAPI, append(s.routeOptions, options...)...)
+	route := NewRoute[any, any](method, path, controller, s.Engine, append(s.routeOptions, options...)...)
 
 	return Registers(s.Engine, netHttpRouteRegisterer[any, any]{
 		s:          s,

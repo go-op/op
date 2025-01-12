@@ -7,9 +7,9 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-func NewRoute[T, B any](method, path string, handler any, openapi *OpenAPI, options ...func(*BaseRoute)) Route[T, B] {
+func NewRoute[T, B any](method, path string, handler any, e *Engine, options ...func(*BaseRoute)) Route[T, B] {
 	return Route[T, B]{
-		BaseRoute: NewBaseRoute(method, path, handler, openapi, options...),
+		BaseRoute: NewBaseRoute(method, path, handler, e, options...),
 	}
 }
 
@@ -20,14 +20,15 @@ type Route[ResponseBody any, RequestBody any] struct {
 	BaseRoute
 }
 
-func NewBaseRoute(method, path string, handler any, openapi *OpenAPI, options ...func(*BaseRoute)) BaseRoute {
+func NewBaseRoute(method, path string, handler any, e *Engine, options ...func(*BaseRoute)) BaseRoute {
 	baseRoute := BaseRoute{
-		Method:    method,
-		Path:      path,
-		Params:    make(map[string]OpenAPIParam),
-		FullName:  FuncName(handler),
-		Operation: openapi3.NewOperation(),
-		OpenAPI:   openapi,
+		Method:              method,
+		Path:                path,
+		Params:              make(map[string]OpenAPIParam),
+		FullName:            FuncName(handler),
+		Operation:           openapi3.NewOperation(),
+		OpenAPI:             e.OpenAPI,
+		RequestContentTypes: e.requestContentTypes,
 	}
 
 	for _, o := range options {
@@ -61,7 +62,7 @@ type BaseRoute struct {
 	FullName string
 
 	// Content types accepted for the request body. If nil, all content types (*/*) are accepted.
-	AcceptedContentTypes []string
+	RequestContentTypes []string
 
 	Middlewares []func(http.Handler) http.Handler
 

@@ -343,12 +343,6 @@ func WithLogHandler(handler slog.Handler) func(*Server) {
 	}
 }
 
-// WithRequestContentType sets the accepted content types for the server.
-// By default, the accepted content types is */*.
-func WithRequestContentType(consumes ...string) func(*Server) {
-	return func(s *Server) { s.acceptedContentTypes = consumes }
-}
-
 // WithSerializer sets a custom serializer of type Sender that overrides the default one.
 // Please send a PR if you think the default serializer should be improved, instead of jumping to this option.
 func WithSerializer(serializer Sender) func(*Server) {

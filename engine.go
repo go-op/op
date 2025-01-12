@@ -39,7 +39,7 @@ type Engine struct {
 	ErrorHandler  func(error) error
 	OpenAPIConfig OpenAPIConfig
 
-	acceptedContentTypes []string
+	requestContentTypes []string
 }
 
 type OpenAPIConfig struct {
@@ -57,6 +57,12 @@ type OpenAPIConfig struct {
 
 var defaultOpenAPIConfig = OpenAPIConfig{
 	JSONFilePath: "doc/openapi.json",
+}
+
+// WithRequestContentType sets the accepted content types for the engine.
+// By default, the accepted content types is */*.
+func WithRequestContentType(consumes ...string) func(*Engine) {
+	return func(e *Engine) { e.requestContentTypes = consumes }
 }
 
 func WithOpenAPIConfig(config OpenAPIConfig) func(*Engine) {
