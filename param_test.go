@@ -28,7 +28,7 @@ func TestParams(t *testing.T) {
 
 		require.NotNil(t, route)
 		require.NotNil(t, route.Params)
-		require.Len(t, route.Params, 3)
+		require.Len(t, route.Params, 4)
 		require.Equal(t, "Name", route.Params["name"].Description)
 		require.True(t, route.Params["name"].Required)
 		require.Equal(t, "hey", route.Params["name"].Default)

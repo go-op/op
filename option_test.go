@@ -261,7 +261,7 @@ func TestGroup(t *testing.T) {
 
 		require.NotNil(t, route)
 		require.NotNil(t, route.Params)
-		require.Len(t, route.Params, 3)
+		require.Len(t, route.Params, 4)
 		require.Equal(t, "test header", route.Params["X-Test"].Description)
 		require.Equal(t, "My Header", route.Operation.Parameters.GetByInAndName("header", "X-Test").Examples["test"].Value.Value)
 	})

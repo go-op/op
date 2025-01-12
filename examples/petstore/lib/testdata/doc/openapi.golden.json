@@ -172,19 +172,6 @@
 					"name": {
 						"example": "Napoleon",
 						"type": "string"
-					},
-					"references": {
-						"properties": {
-							"type": {
-								"description": "type of reference",
-								"example": "pet-123456",
-								"type": "string"
-							},
-							"value": {
-								"type": "string"
-							}
-						},
-						"type": "object"
 					}
 				},
 				"required": [
@@ -212,19 +199,6 @@
 						"maxLength": 100,
 						"minLength": 1,
 						"type": "string"
-					},
-					"references": {
-						"properties": {
-							"type": {
-								"description": "type of reference",
-								"example": "pet-123456",
-								"type": "string"
-							},
-							"value": {
-								"type": "string"
-							}
-						},
-						"type": "object"
 					}
 				},
 				"required": [
@@ -262,19 +236,6 @@
 						"minLength": 1,
 						"nullable": true,
 						"type": "string"
-					},
-					"references": {
-						"properties": {
-							"type": {
-								"description": "type of reference",
-								"example": "pet-123456",
-								"type": "string"
-							},
-							"value": {
-								"type": "string"
-							}
-						},
-						"type": "object"
 					}
 				},
 				"type": "object"
@@ -296,6 +257,14 @@
 				"description": "#### Controller: \n\n`github.com/go-fuego/fuego/examples/petstore/controllers.PetsResources.filterPets`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nFilter pets",
 				"operationId": "GET_/pets/",
 				"parameters": [
+					{
+						"description": "Accept header parameter",
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"description": "header description",
 						"in": "header",
@@ -354,13 +323,6 @@
 						"schema": {
 							"default": 3,
 							"type": "integer"
-						}
-					},
-					{
-						"in": "header",
-						"name": "Accept",
-						"schema": {
-							"type": "string"
 						}
 					}
 				],
@@ -472,16 +434,17 @@
 				"operationId": "POST_/pets/",
 				"parameters": [
 					{
-						"description": "header description",
+						"description": "Accept header parameter",
 						"in": "header",
-						"name": "X-Header",
+						"name": "Accept",
 						"schema": {
 							"type": "string"
 						}
 					},
 					{
+						"description": "header description",
 						"in": "header",
-						"name": "Accept",
+						"name": "X-Header",
 						"schema": {
 							"type": "string"
 						}
@@ -590,6 +553,14 @@
 				"operationId": "GET_/pets/all",
 				"parameters": [
 					{
+						"description": "Accept header parameter",
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
 						"description": "header description",
 						"in": "header",
 						"name": "X-Header",
@@ -624,13 +595,6 @@
 						"schema": {
 							"default": 1,
 							"type": "integer"
-						}
-					},
-					{
-						"in": "header",
-						"name": "Accept",
-						"schema": {
-							"type": "string"
 						}
 					}
 				],
@@ -745,16 +709,17 @@
 				"operationId": "GET_/pets/by-age",
 				"parameters": [
 					{
-						"description": "header description",
+						"description": "Accept header parameter",
 						"in": "header",
-						"name": "X-Header",
+						"name": "Accept",
 						"schema": {
 							"type": "string"
 						}
 					},
 					{
+						"description": "header description",
 						"in": "header",
-						"name": "Accept",
+						"name": "X-Header",
 						"schema": {
 							"type": "string"
 						}
@@ -849,16 +814,17 @@
 				"operationId": "GET_/pets/by-name/:name...",
 				"parameters": [
 					{
-						"description": "header description",
+						"description": "Accept header parameter",
 						"in": "header",
-						"name": "X-Header",
+						"name": "Accept",
 						"schema": {
 							"type": "string"
 						}
 					},
 					{
+						"description": "header description",
 						"in": "header",
-						"name": "Accept",
+						"name": "X-Header",
 						"schema": {
 							"type": "string"
 						}
@@ -1053,6 +1019,14 @@
 				"operationId": "GET_/pets/std/all",
 				"parameters": [
 					{
+						"description": "Accept header parameter",
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
 						"description": "header description",
 						"in": "header",
 						"name": "X-Header",
@@ -1137,16 +1111,17 @@
 				"operationId": "DELETE_/pets/:id",
 				"parameters": [
 					{
-						"description": "header description",
+						"description": "Accept header parameter",
 						"in": "header",
-						"name": "X-Header",
+						"name": "Accept",
 						"schema": {
 							"type": "string"
 						}
 					},
 					{
+						"description": "header description",
 						"in": "header",
-						"name": "Accept",
+						"name": "X-Header",
 						"schema": {
 							"type": "string"
 						}
@@ -1235,6 +1210,14 @@
 				"operationId": "getPet",
 				"parameters": [
 					{
+						"description": "Accept header parameter",
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
 						"description": "header description",
 						"in": "header",
 						"name": "X-Header",
@@ -1252,13 +1235,6 @@
 						"in": "path",
 						"name": "id",
 						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "header",
-						"name": "Accept",
 						"schema": {
 							"type": "string"
 						}
@@ -1339,16 +1315,17 @@
 				"operationId": "PUT_/pets/:id",
 				"parameters": [
 					{
-						"description": "header description",
+						"description": "Accept header parameter",
 						"in": "header",
-						"name": "X-Header",
+						"name": "Accept",
 						"schema": {
 							"type": "string"
 						}
 					},
 					{
+						"description": "header description",
 						"in": "header",
-						"name": "Accept",
+						"name": "X-Header",
 						"schema": {
 							"type": "string"
 						}
@@ -1450,16 +1427,17 @@
 				"operationId": "PUT_/pets/:id/json",
 				"parameters": [
 					{
-						"description": "header description",
+						"description": "Accept header parameter",
 						"in": "header",
-						"name": "X-Header",
+						"name": "Accept",
 						"schema": {
 							"type": "string"
 						}
 					},
 					{
+						"description": "header description",
 						"in": "header",
-						"name": "Accept",
+						"name": "X-Header",
 						"schema": {
 							"type": "string"
 						}
