@@ -807,3 +807,82 @@ func TestDefaultLoggingMiddleware(t *testing.T) {
 		})
 	}
 }
+
+func TestWithSeveralGlobalMiddelwares(t *testing.T) {
+	s := NewServer(
+		WithGlobalMiddlewares(
+			dummyMiddleware,
+			func(next http.Handler) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("X-Global-Middleware", "1")
+					if r.FormValue("one") == "true" {
+						w.Write([]byte("one"))
+						return
+					}
+					next.ServeHTTP(w, r)
+				})
+			},
+			func(next http.Handler) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("X-Global-Middleware", "2")
+					if r.FormValue("two") == "true" {
+						w.Write([]byte("two"))
+						return
+					}
+					next.ServeHTTP(w, r)
+				})
+			}),
+	)
+
+	Get(s, "/my-route", dummyController)
+
+	err := s.setup()
+	require.NoError(t, err)
+
+	t.Run("global middlewares work even on non-matching routes (returns 404)", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/non-existing-route", nil)
+		res := httptest.NewRecorder()
+
+		s.Handler.ServeHTTP(res, req)
+
+		t.Log(res.Body.String())
+		require.Equal(t, 404, res.Code)
+		require.Equal(t, "1", res.Header().Get("X-Global-Middleware"))
+		require.Equal(t, "response", res.Header().Get("X-Test-Response"))
+	})
+
+	t.Run("global middlewares work on matching routes", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/my-route", nil)
+		res := httptest.NewRecorder()
+
+		s.Handler.ServeHTTP(res, req)
+
+		t.Log(res.Body.String())
+		require.Equal(t, 200, res.Code)
+		require.Equal(t, "1", res.Header().Get("X-Global-Middleware"))
+	})
+
+	t.Run("stop the chain of middlewares and return 200 instead of expected 404 (non-matching route)", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/non-existing-route?one=true", nil)
+		res := httptest.NewRecorder()
+
+		s.Handler.ServeHTTP(res, req)
+
+		t.Log(res.Body.String())
+		require.Equal(t, 200, res.Code)
+		require.Equal(t, "1", res.Header().Get("X-Global-Middleware"))
+		require.Equal(t, "one", res.Body.String())
+	})
+
+	t.Run("pass the first global middleware, then stop the chain of middlewares returning 200 instead of returning 404 (non-matching route)", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/non-existing-route?two=true", nil)
+		res := httptest.NewRecorder()
+
+		s.Handler.ServeHTTP(res, req)
+
+		t.Log(res.Body.String())
+		require.Equal(t, 200, res.Code)
+		require.Equal(t, "2", res.Header().Get("X-Global-Middleware"))
+		require.Equal(t, "two", res.Body.String())
+	})
+}

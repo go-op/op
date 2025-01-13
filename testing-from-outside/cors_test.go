@@ -13,7 +13,7 @@ import (
 func TestCors(t *testing.T) {
 	s := fuego.NewServer(
 		fuego.WithoutLogger(),
-		fuego.WithCorsMiddleware(cors.New(cors.Options{
+		fuego.WithGlobalMiddlewares(cors.New(cors.Options{
 			AllowedOrigins: []string{"*"},
 			AllowedMethods: []string{"GET"},
 		}).Handler),

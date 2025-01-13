@@ -40,8 +40,9 @@ func (s *Server) setup() error {
 	s.printStartupMessage()
 
 	s.Server.Handler = s.Mux
-	if s.corsMiddleware != nil {
-		s.Server.Handler = s.corsMiddleware(s.Server.Handler)
+
+	for _, middleware := range s.globalMiddlewares {
+		s.Server.Handler = middleware(s.Server.Handler)
 	}
 
 	return nil
