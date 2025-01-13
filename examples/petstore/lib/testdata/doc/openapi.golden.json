@@ -106,7 +106,10 @@
 					"detail": {
 						"description": "Human readable error message",
 						"nullable": true,
-						"type": "string"
+						"type": "string",
+						"xml": {
+							"name": "detail"
+						}
 					},
 					"errors": {
 						"items": {
@@ -125,27 +128,42 @@
 							"type": "object"
 						},
 						"nullable": true,
-						"type": "array"
+						"type": "array",
+						"xml": {
+							"name": "errors"
+						}
 					},
 					"instance": {
 						"nullable": true,
-						"type": "string"
+						"type": "string",
+						"xml": {
+							"name": "instance"
+						}
 					},
 					"status": {
 						"description": "HTTP status code",
 						"example": 403,
 						"nullable": true,
-						"type": "integer"
+						"type": "integer",
+						"xml": {
+							"name": "status"
+						}
 					},
 					"title": {
 						"description": "Short title of the error",
 						"nullable": true,
-						"type": "string"
+						"type": "string",
+						"xml": {
+							"name": "title"
+						}
 					},
 					"type": {
 						"description": "URL of the error type. Can be used to lookup the error in a documentation",
 						"nullable": true,
-						"type": "string"
+						"type": "string",
+						"xml": {
+							"name": "type"
+						}
 					}
 				},
 				"type": "object"
@@ -236,7 +254,10 @@
 				"description": "PetsError schema",
 				"properties": {
 					"message": {
-						"type": "string"
+						"type": "string",
+						"xml": {
+							"name": "message"
+						}
 					}
 				},
 				"type": "object"
