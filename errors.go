@@ -24,17 +24,17 @@ type ErrorWithDetail interface {
 // HTTPError is the error response used by the serialization part of the framework.
 type HTTPError struct {
 	// Developer readable error message. Not shown to the user to avoid security leaks.
-	Err error `json:"-" xml:"-"`
+	Err error `json:"-" xml:"-" yaml:"-"`
 	// URL of the error type. Can be used to lookup the error in a documentation
-	Type string `json:"type,omitempty" xml:"type,omitempty" description:"URL of the error type. Can be used to lookup the error in a documentation"`
+	Type string `json:"type,omitempty" xml:"type,omitempty" yaml:"type,omitempty" description:"URL of the error type. Can be used to lookup the error in a documentation"`
 	// Short title of the error
-	Title string `json:"title,omitempty" xml:"title,omitempty" description:"Short title of the error"`
-	// Human readable error message
-	Detail   string      `json:"detail,omitempty" xml:"detail,omitempty" description:"Human readable error message"`
-	Instance string      `json:"instance,omitempty" xml:"instance,omitempty"`
-	Errors   []ErrorItem `json:"errors,omitempty" xml:"errors,omitempty"`
+	Title string `json:"title,omitempty" xml:"title,omitempty" yaml:"title,omitempty" description:"Short title of the error"`
 	// HTTP status code. If using a different type than [HTTPError], for example [BadRequestError], this will be automatically overridden after Fuego error handling.
-	Status int `json:"status,omitempty" xml:"status,omitempty" description:"HTTP status code" example:"403"`
+	Status int `json:"status,omitempty" xml:"status,omitempty" yaml:"status,omitempty" description:"HTTP status code" example:"403"`
+	// Human readable error message
+	Detail   string      `json:"detail,omitempty" xml:"detail,omitempty" yaml:"detail,omitempty" description:"Human readable error message"`
+	Instance string      `json:"instance,omitempty" xml:"instance,omitempty" yaml:"instance,omitempty"`
+	Errors   []ErrorItem `json:"errors,omitempty" xml:"errors,omitempty" yaml:"errors,omitempty"`
 }
 
 type ErrorItem struct {
@@ -44,15 +44,22 @@ type ErrorItem struct {
 }
 
 func (e HTTPError) Error() string {
-	title := e.Title
 	code := e.StatusCode()
+	title := e.Title
 	if title == "" {
 		title = http.StatusText(code)
 		if title == "" {
 			title = "HTTP Error"
 		}
 	}
-	return fmt.Sprintf("%d %s: %s", code, title, e.DetailMsg())
+	msg := fmt.Sprintf("%d %s", code, title)
+
+	detail := e.DetailMsg()
+	if detail == "" {
+		return msg
+	}
+
+	return fmt.Sprintf("%s: %s", msg, e.Detail)
 }
 
 func (e HTTPError) StatusCode() int {

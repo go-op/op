@@ -351,14 +351,32 @@ func TestSendYAMLError(t *testing.T) {
 
 		require.Equal(t, http.StatusInternalServerError, w.Result().StatusCode)
 		require.Equal(t, "application/x-yaml", w.Header().Get("Content-Type"))
-		require.Equal(t, "Hello World\n", w.Body.String())
+		require.Equal(t, crlf(`{}`), w.Body.String())
 	})
 	t.Run("error with status", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		SendYAMLError(w, nil, BadRequestError{Err: errors.New("Hello World")})
 		require.Equal(t, http.StatusBadRequest, w.Result().StatusCode)
 		require.Equal(t, "application/x-yaml", w.Header().Get("Content-Type"))
-		require.Equal(t, "Hello World\n", w.Body.String())
+		require.Equal(t, crlf(`{}`), w.Body.String())
+	})
+	t.Run("error with status and detail", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		SendYAMLError(w, nil, BadRequestError{Err: errors.New("Hello World"), Detail: "World, Hello"})
+		require.Equal(t, http.StatusBadRequest, w.Result().StatusCode)
+		require.Equal(t, "application/x-yaml", w.Header().Get("Content-Type"))
+		require.Equal(t, crlf(`detail: World, Hello`), w.Body.String())
+	})
+	t.Run("error with multiple fields", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		SendYAMLError(w, nil, BadRequestError{
+			Err:    errors.New("Hello World"),
+			Detail: "World, Hello",
+			Title:  "Error: Hello, World",
+		})
+		require.Equal(t, http.StatusBadRequest, w.Result().StatusCode)
+		require.Equal(t, "application/x-yaml", w.Header().Get("Content-Type"))
+		require.Equal(t, crlf("title: 'Error: Hello, World'\ndetail: World, Hello"), w.Body.String())
 	})
 }
 
