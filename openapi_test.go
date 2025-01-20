@@ -39,6 +39,16 @@ type MyOutputStruct struct {
 	Quantity int    `json:"quantity"`
 }
 
+type MyOutputStructDetails struct {
+	IngressDate string `json:"in_date" xml:"date,attr"`
+}
+
+type MyOutputStructWithXmlAttribute struct {
+	Name     string                `json:"name" xml:"Name"`
+	Quantity int                   `json:"quantity" xml:"Quantity"`
+	Details  MyOutputStructDetails `json:"details" xml:"Details"`
+}
+
 type InvalidExample struct {
 	XMLName xml.Name `xml:"TestStruct"`
 	MyInt   int      `json:"e" example:"isString" validate:"min=isString,max=isString" `
@@ -282,6 +292,17 @@ func TestServer_generateOpenAPI(t *testing.T) {
 	Get(s, "/post/{id}", func(ContextNoBody) (MyOutputStruct, error) {
 		return MyOutputStruct{}, nil
 	})
+
+	Get(s, "/postxml/{id}", func(ContextNoBody) (MyOutputStructWithXmlAttribute, error) {
+		return MyOutputStructWithXmlAttribute{
+			Name:     "name",
+			Quantity: 1,
+			Details: MyOutputStructDetails{
+				IngressDate: "2021-01-01",
+			},
+		}, nil
+	})
+
 	Post(s, "/multidimensional/post", func(ContextWithBody[MyStruct]) ([][]MyStruct, error) {
 		return nil, nil
 	})
@@ -299,6 +320,14 @@ func TestServer_generateOpenAPI(t *testing.T) {
 	require.NotNil(t, document.Paths.Find("/post/{id}").Get.Responses.Value("200").Value.Content["application/json"])
 	require.Nil(t, document.Paths.Find("/post/{id}").Get.Responses.Value("200").Value.Content["application/json"].Schema.Value.Properties["unknown"])
 	require.Equal(t, document.Paths.Find("/post/{id}").Get.Responses.Value("200").Value.Content["application/json"].Schema.Value.Properties["quantity"].Value.Type, &openapi3.Types{"integer"})
+
+	require.Nil(t, document.Paths.Find("/postxml/{id}").Get.Responses.Value("200").Value.Content["application/xml"].Schema.Value.Properties["unknown"])
+	require.Equal(t, document.Paths.Find("/postxml/{id}").Get.Responses.Value("200").Value.Content["application/xml"].Schema.Value.Properties["quantity"].Value.Type, &openapi3.Types{"integer"})
+	require.Equal(t, document.Paths.Find("/postxml/{id}").Get.Responses.Value("200").Value.Content["application/xml"].Schema.Value.Properties["details"].Value.Type, &openapi3.Types{"object"})
+	require.Equal(t, document.Paths.Find("/postxml/{id}").Get.Responses.Value("200").Value.Content["application/xml"].Schema.Value.Properties["details"].Value.XML.Name, "Details")
+	require.Equal(t, document.Paths.Find("/postxml/{id}").Get.Responses.Value("200").Value.Content["application/xml"].Schema.Value.Properties["details"].Value.Properties["in_date"].Value.Type, &openapi3.Types{"string"})
+	require.Equal(t, document.Paths.Find("/postxml/{id}").Get.Responses.Value("200").Value.Content["application/xml"].Schema.Value.Properties["details"].Value.Properties["in_date"].Value.XML.Attribute, true)
+	require.Equal(t, document.Paths.Find("/postxml/{id}").Get.Responses.Value("200").Value.Content["application/xml"].Schema.Value.Properties["details"].Value.Properties["in_date"].Value.XML.Name, "date")
 
 	t.Run("openapi doc is available through a route", func(t *testing.T) {
 		w := httptest.NewRecorder()
