@@ -82,6 +82,9 @@ type Server struct {
 	disableStartupMessages bool
 	disableAutoGroupTags   bool
 	isTLS                  bool
+
+	// StripTrailingSlash determines if trailing slashes should be removed from routes and requests
+	StripTrailingSlash bool
 }
 
 // NewServer creates a new server with the given options.
@@ -481,5 +484,19 @@ func WithLoggingMiddleware(loggingConfig LoggingConfig) func(*Server) {
 		if loggingConfig.RequestIDFunc != nil {
 			s.loggingConfig.RequestIDFunc = loggingConfig.RequestIDFunc
 		}
+	}
+}
+
+// WithStripTrailingSlash enables stripping of trailing slashes from routes and requests
+// Default is false.
+//
+// Example:
+//
+//	app := fuego.NewServer(
+//		fuego.WithStripTrailingSlash(),
+//	)
+func WithStripTrailingSlash() func(*Server) {
+	return func(s *Server) {
+		s.StripTrailingSlash = true
 	}
 }

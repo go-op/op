@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -82,6 +83,11 @@ func (s *Server) url() string {
 // Uses Route for route configuration. Optional.
 func HTTPHandler[ReturnType, Body any](s *Server, controller func(c ContextWithBody[Body]) (ReturnType, error), route BaseRoute) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		if s.StripTrailingSlash && len(r.URL.Path) > 1 {
+			r.URL.Path = strings.TrimRight(r.URL.Path, "/")
+		}
+
 		var templates *template.Template
 		if s.template != nil {
 			templates = template.Must(s.template.Clone())
