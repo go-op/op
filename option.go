@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 )
@@ -438,3 +439,29 @@ func OptionSecurity(securityRequirements ...openapi3.SecurityRequirement) func(*
 		*r.Operation.Security = append(*r.Operation.Security, securityRequirements...)
 	}
 }
+
+// OptionStripTrailingSlash removes trailing slashes from both the route path and incoming requests.
+// This can be applied globally using WithStripTrailingSlash() or per-route.
+// For example: "/users/" becomes "/users" for both route definition and request handling.
+func OptionStripTrailingSlash() func(*BaseRoute) {
+	return func(r *BaseRoute) {
+		// Strip trailing slash from route path
+		if len(r.Path) > 1 {
+			r.Path = strings.TrimRight(r.Path, "/")
+		}
+
+		// Add middleware to strip trailing slash from requests
+		stripSlashMiddleware := func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if len(r.URL.Path) > 1 {
+					r.URL.Path = strings.TrimRight(r.URL.Path, "/")
+				}
+				next.ServeHTTP(w, r)
+			})
+		}
+
+		// Add the middleware to the route
+		r.Middlewares = append(r.Middlewares, stripSlashMiddleware)
+	}
+}
+

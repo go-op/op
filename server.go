@@ -449,3 +449,18 @@ func WithLoggingMiddleware(loggingConfig LoggingConfig) func(*Server) {
 		}
 	}
 }
+
+// WithStripTrailingSlash enables stripping of trailing slashes from routes and requests
+// Default is false.
+//
+// Example:
+//
+//	app := fuego.NewServer(
+//		fuego.WithStripTrailingSlash(),
+//	)
+func WithStripTrailingSlash() func(*Server) {
+	return func(s *Server) {
+		// Add OptionStripTrailingSlash to the default route options
+		s.routeOptions = append(s.routeOptions, OptionStripTrailingSlash())
+	}
+}
