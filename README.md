@@ -51,6 +51,7 @@ to develop APIs and web applications.
   `log/slog`, `context` and `html/template`.
 - **Routing**: Fuego router is based on Go 1.22 `net/http`, with grouping and
   middleware support
+- Optional trailing slash handling: Configure whether `/users` and `/users/` should be treated as the same route
 - **Serialization/Deserialization**: Fuego automatically serializes and
   deserializes JSON, XML and HTML Forms based on user-provided structs
   (or not, if you want to do it yourself)
@@ -66,6 +67,24 @@ to develop APIs and web applications.
   `html/template` - you can still also use your own template system like
   `templ` or `gomponents`
 - **Adaptors**: [Experimental] Fuego can be used with Gin.
+
+## Configuration
+
+### Trailing Slashes
+
+By default, Fuego treats URLs with and without trailing slashes as distinct routes. You can configure the server to automatically strip trailing slashes using the `WithStripTrailingSlash` option:
+
+```go
+s := fuego.NewServer(
+    fuego.WithStripTrailingSlash(),
+)
+```
+
+When enabled:
+
+- `/api/users` and `/api/users/` will route to the same handler
+- Routes registered with trailing slashes are automatically converted to non-trailing slash versions
+- Improves URL consistency across your API
 
 ## Examples
 
