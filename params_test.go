@@ -11,6 +11,7 @@ func TestParsePathParams(t *testing.T) {
 	require.Equal(t, []string(nil), parsePathParams("/item/"))
 	require.Equal(t, []string{"user"}, parsePathParams("POST /item/{user}"))
 	require.Equal(t, []string{"user"}, parsePathParams("/item/{user}"))
+	require.Equal(t, []string{"user", "bookname..."}, parsePathParams("/item/{user}/{bookname...}"))
 	require.Equal(t, []string{"user", "id"}, parsePathParams("/item/{user}/{id}"))
 	require.Equal(t, []string{"$"}, parsePathParams("/item/{$}"))
 	require.Equal(t, []string{"user"}, parsePathParams("POST alt.com/item/{user}"))
