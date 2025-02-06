@@ -1,4 +1,4 @@
-package views_test
+package handler_test
 
 import (
 	"context"
@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/go-fuego/fuego"
+	"github.com/go-fuego/fuego/examples/full-app-gourmet/handler"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/server"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/store"
-	"github.com/go-fuego/fuego/examples/full-app-gourmet/views"
 )
 
 func TestShowIndex(t *testing.T) {
-	// rs := views.Resource{
+	// rs := handler.Resource{
 	// 	RecipesQueries:     nil,
 	// 	IngredientsQueries: nil,
 	// 	DosingQueries:      nil,
@@ -28,7 +28,7 @@ func TestShowIndex(t *testing.T) {
 }
 
 type RecipeRepositoryMock struct {
-	views.RecipeRepository
+	handler.RecipeRepository
 }
 
 func (r RecipeRepositoryMock) GetRecipes(ctx context.Context) ([]store.Recipe, error) {
@@ -45,7 +45,7 @@ func (r RecipeRepositoryMock) GetRandomRecipes(ctx context.Context) ([]store.Rec
 }
 
 type IngredientRepositoryMock struct {
-	views.IngredientRepository
+	handler.IngredientRepository
 }
 
 func (r IngredientRepositoryMock) GetIngredients(ctx context.Context) ([]store.Ingredient, error) {
@@ -54,7 +54,7 @@ func (r IngredientRepositoryMock) GetIngredients(ctx context.Context) ([]store.I
 }
 
 func TestShowIndexExt(t *testing.T) {
-	viewsResources := views.Resource{
+	viewsResources := handler.Resource{
 		RecipesQueries:     RecipeRepositoryMock{},
 		IngredientsQueries: IngredientRepositoryMock{},
 	}
@@ -77,7 +77,7 @@ func TestShowIndexExt(t *testing.T) {
 }
 
 func BenchmarkShowIndexExt(b *testing.B) {
-	viewsResources := views.Resource{
+	viewsResources := handler.Resource{
 		RecipesQueries:     RecipeRepositoryMock{},
 		IngredientsQueries: IngredientRepositoryMock{},
 	}

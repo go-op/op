@@ -11,9 +11,9 @@ import (
 	"github.com/lmittmann/tint"
 
 	"github.com/go-fuego/fuego"
+	"github.com/go-fuego/fuego/examples/full-app-gourmet/handler"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/server"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/store"
-	"github.com/go-fuego/fuego/examples/full-app-gourmet/views"
 )
 
 //go:generate sqlc generate
@@ -52,7 +52,7 @@ func main() {
 	store := store.New(db)
 
 	// Create resources that will be available in handlers
-	viewsResources := views.Resource{
+	viewsResources := handler.Resource{
 		RecipesQueries:     store,
 		IngredientsQueries: store,
 		DosingQueries:      store,

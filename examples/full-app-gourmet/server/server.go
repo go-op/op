@@ -6,14 +6,14 @@ import (
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 
 	"github.com/go-fuego/fuego"
+	"github.com/go-fuego/fuego/examples/full-app-gourmet/handler"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/static"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/templates"
-	"github.com/go-fuego/fuego/examples/full-app-gourmet/views"
 	"github.com/go-fuego/fuego/option"
 )
 
 type Resources struct {
-	HandlersResources views.Resource
+	HandlersResources handler.Resource
 }
 
 func cache(h http.Handler) http.Handler {
@@ -28,7 +28,7 @@ func (rs Resources) Setup(
 	options ...func(*fuego.Server),
 ) *fuego.Server {
 	serverOptions := []func(*fuego.Server){
-		fuego.WithAutoAuth(views.LoginFunc),
+		fuego.WithAutoAuth(handler.LoginFunc),
 		fuego.WithTemplateFS(templates.FS),
 		fuego.WithTemplateGlobs("**/*.html", "**/**/*.html"),
 		fuego.WithRouteOptions(

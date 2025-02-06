@@ -1,4 +1,4 @@
-package views
+package handler
 
 import (
 	"github.com/go-fuego/fuego"
