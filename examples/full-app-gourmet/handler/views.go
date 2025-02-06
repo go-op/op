@@ -16,10 +16,15 @@ var optionPagination = option.Group(
 	option.QueryInt("perPage", "Number of items per page", param.Default(20)),
 )
 
+// Marks the routes not actually useful but shows different ways to use Fuego
+var optionDemo = option.Group(
+	option.Tags("fuego-demo"),
+)
+
 func (rs Resource) Routes(s *fuego.Server) {
 	// Public Pages
-	fuego.GetStd(s, "/recipes-std", rs.showRecipesStd, option.Tags("tests"))
-	fuego.GetStd(s, "/recipes-std-json", rs.getAllRecipesStandardWithHelpers, option.Tags("tests"))
+	fuego.GetStd(s, "/recipes-std", rs.showRecipesStd, optionDemo)
+	fuego.GetStd(s, "/recipes-std-json", rs.getAllRecipesStandardWithHelpers, optionDemo)
 	fuego.All(s, "/", rs.showIndex, option.Middleware(cache.New()))
 	fuego.GetStd(s, "/robots.txt", rs.robots, option.Middleware(cache.New()))
 	fuego.Get(s, "/recipes", rs.listRecipes, option.Tags("recipes"))
@@ -35,7 +40,7 @@ func (rs Resource) Routes(s *fuego.Server) {
 	fuego.Get(s, "/recipes-list", rs.showRecipesList,
 		option.Query("search", "Search query", param.Example("example", "Galette des Rois")),
 		option.Deprecated(),
-		option.Tags("tests"),
+		optionDemo,
 	)
 	fuego.Get(s, "/search", rs.searchRecipes,
 		option.Query("q", "Search query", param.Required(), param.Example("example", "Galette des Rois")),
