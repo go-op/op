@@ -25,6 +25,7 @@ type Resource struct {
 	RecipesQueries     RecipeRepository
 	IngredientsQueries IngredientRepository
 	MetaQueries        MetaRepository
+	Security           fuego.Security
 }
 
 func (rs Resource) showRecipesStd(w http.ResponseWriter, r *http.Request) {
@@ -108,7 +109,7 @@ func (rs Resource) showIndex(c fuego.ContextNoBody) (fuego.Templ, error) {
 	}), nil
 }
 
-func (rs Resource) showRecipes(c fuego.ContextNoBody) (*fuego.DataOrTemplate[[]store.Recipe], error) {
+func (rs Resource) listRecipes(c fuego.ContextNoBody) (*fuego.DataOrTemplate[[]store.Recipe], error) {
 	recipes, err := rs.RecipesQueries.GetRecipes(c.Context())
 	if err != nil {
 		return nil, err
@@ -121,7 +122,7 @@ func (rs Resource) showRecipes(c fuego.ContextNoBody) (*fuego.DataOrTemplate[[]s
 		})), nil
 }
 
-func (rs Resource) relatedRecipes(c fuego.ContextNoBody) (fuego.Templ, error) {
+func (rs Resource) relatedRecipes(c fuego.ContextNoBody) (*fuego.DataOrTemplate[[]store.Recipe], error) {
 	baseRecipeID := c.PathParam("id")
 
 	recipes, err := rs.RecipesQueries.GetRandomRecipes(c.Context())
@@ -137,7 +138,10 @@ func (rs Resource) relatedRecipes(c fuego.ContextNoBody) (fuego.Templ, error) {
 		filteredRecipes = append(filteredRecipes, r)
 	}
 
-	return templa.RelatedRecipes(recipes), nil
+	return fuego.DataOrHTML(
+		filteredRecipes,
+		templa.RelatedRecipes(filteredRecipes),
+	), nil
 }
 
 func (rs Resource) showSingleRecipes2(c fuego.ContextNoBody) (fuego.Templ, error) {
@@ -286,6 +290,16 @@ func (rs Resource) RecipePage(c fuego.ContextNoBody) (fuego.CtxRenderer, error) 
 		"Ingredients":  ingredients,
 		"Instructions": markdown.Markdown(recipe.Instructions),
 	})
+}
+
+func (rs Resource) getAllRecipesStandardWithHelpers(w http.ResponseWriter, r *http.Request) {
+	recipes, err := rs.RecipesQueries.GetRecipes(r.Context())
+	if err != nil {
+		fuego.SendJSONError(w, r, err)
+		return
+	}
+
+	fuego.SendJSON(w, r, recipes)
 }
 
 type RecipeRepository interface {

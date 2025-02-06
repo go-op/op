@@ -18,10 +18,11 @@ var optionPagination = option.Group(
 
 func (rs Resource) Routes(s *fuego.Server) {
 	// Public Pages
-	fuego.GetStd(s, "/recipes-std", rs.showRecipesStd, option.Tags("recipes"))
+	fuego.GetStd(s, "/recipes-std", rs.showRecipesStd, option.Tags("tests"))
+	fuego.GetStd(s, "/recipes-std-json", rs.getAllRecipesStandardWithHelpers, option.Tags("tests"))
 	fuego.All(s, "/", rs.showIndex, option.Middleware(cache.New()))
 	fuego.GetStd(s, "/robots.txt", rs.robots, option.Middleware(cache.New()))
-	fuego.Get(s, "/recipes", rs.showRecipes, option.Tags("recipes"))
+	fuego.Get(s, "/recipes", rs.listRecipes, option.Tags("recipes"))
 	fuego.Get(s, "/planner", rs.planner)
 	fuego.Get(s, "/recipes/{id}", rs.showSingleRecipes2, option.Tags("recipes"))
 	fuego.Get(s, "/recipes/{id}/related", rs.relatedRecipes, option.Tags("recipes"))
@@ -33,7 +34,8 @@ func (rs Resource) Routes(s *fuego.Server) {
 	// Public Chunks
 	fuego.Get(s, "/recipes-list", rs.showRecipesList,
 		option.Query("search", "Search query", param.Example("example", "Galette des Rois")),
-		option.Tags("recipes"),
+		option.Deprecated(),
+		option.Tags("tests"),
 	)
 	fuego.Get(s, "/search", rs.searchRecipes,
 		option.Query("q", "Search query", param.Required(), param.Example("example", "Galette des Rois")),
@@ -47,8 +49,10 @@ func (rs Resource) Routes(s *fuego.Server) {
 	)
 
 	// Admin Pages
-	adminRoutes := fuego.Group(s, "/admin")
-	fuego.UseStd(adminRoutes, basicauth.New(basicauth.Config{Username: os.Getenv("ADMIN_USER"), Password: os.Getenv("ADMIN_PASSWORD")}))
+	adminRoutes := fuego.Group(s, "/admin",
+		option.Middleware(basicauth.New(basicauth.Config{Username: os.Getenv("ADMIN_USER"), Password: os.Getenv("ADMIN_PASSWORD")})),
+	)
+
 	fuego.Get(adminRoutes, "", rs.pageAdmin,
 		optionPagination,
 	)

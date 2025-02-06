@@ -6,7 +6,6 @@ import (
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 
 	"github.com/go-fuego/fuego"
-	"github.com/go-fuego/fuego/examples/full-app-gourmet/controller"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/static"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/templates"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/views"
@@ -14,8 +13,7 @@ import (
 )
 
 type Resources struct {
-	Views views.Resource
-	API   controller.Resource
+	HandlersResources views.Resource
 }
 
 func cache(h http.Handler) http.Handler {
@@ -30,7 +28,7 @@ func (rs Resources) Setup(
 	options ...func(*fuego.Server),
 ) *fuego.Server {
 	serverOptions := []func(*fuego.Server){
-		fuego.WithAutoAuth(controller.LoginFunc),
+		fuego.WithAutoAuth(views.LoginFunc),
 		fuego.WithTemplateFS(templates.FS),
 		fuego.WithTemplateGlobs("**/*.html", "**/**/*.html"),
 		fuego.WithRouteOptions(
@@ -45,8 +43,6 @@ func (rs Resources) Setup(
 
 	app.OpenAPI.Description().Info.Title = "Gourmet API"
 
-	rs.API.Security = app.Security
-
 	// Register middlewares (functions that will be executed before AND after the controllers, in the order they are registered)
 	// With fuego, you can use any existing middleware that relies on `net/http`, or create your own
 	fuego.Use(app, chiMiddleware.Compress(5, "text/html", "text/css", "application/json"))
@@ -54,10 +50,7 @@ func (rs Resources) Setup(
 	fuego.Handle(app, "/static/", http.StripPrefix("/static", static.Handler()), option.Middleware(cache))
 
 	// Register views (controllers that return HTML pages)
-	rs.Views.Routes(fuego.Group(app, "/"))
-
-	// Register API routes (controllers that return JSON)
-	rs.API.MountRoutes(fuego.Group(app, "/api"))
+	rs.HandlersResources.Routes(app)
 
 	return app
 }

@@ -60,7 +60,7 @@ func TestShowIndexExt(t *testing.T) {
 	}
 
 	serverResources := server.Resources{
-		Views: viewsResources,
+		HandlersResources: viewsResources,
 	}
 
 	os.Setenv("ADMIN_USER", "admin")
@@ -83,7 +83,7 @@ func BenchmarkShowIndexExt(b *testing.B) {
 	}
 
 	serverResources := server.Resources{
-		Views: viewsResources,
+		HandlersResources: viewsResources,
 	}
 
 	os.Setenv("ADMIN_USER", "admin")

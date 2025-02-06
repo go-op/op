@@ -11,7 +11,6 @@ import (
 	"github.com/lmittmann/tint"
 
 	"github.com/go-fuego/fuego"
-	"github.com/go-fuego/fuego/examples/full-app-gourmet/controller"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/server"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/store"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/views"
@@ -52,14 +51,7 @@ func main() {
 
 	store := store.New(db)
 
-	// Create resources that will be available in API controllers
-	apiResources := controller.Resource{
-		RecipesQueries:     store,
-		IngredientsQueries: store,
-		DosingQueries:      store,
-	}
-
-	// Create resources that will be available in HTML controllers
+	// Create resources that will be available in handlers
 	viewsResources := views.Resource{
 		RecipesQueries:     store,
 		IngredientsQueries: store,
@@ -67,11 +59,10 @@ func main() {
 	}
 
 	rs := server.Resources{
-		API:   apiResources,
-		Views: viewsResources,
+		HandlersResources: viewsResources,
 	}
 
-	app := rs.Setup(fuego.WithAddr(fmt.Sprintf(":%d", *port)))
+	app := rs.Setup(fuego.WithAddr(fmt.Sprintf("localhost:%d", *port)))
 
 	app.OpenAPI.Description().Servers = append(app.OpenAPI.Description().Servers, &openapi3.Server{
 		URL:         os.Getenv("PUBLIC_URL"),
