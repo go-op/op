@@ -73,6 +73,10 @@ func (rs Resource) Routes(s *fuego.Server) {
 	)
 	fuego.Get(s, "/users/{username}/favorites", rs.getFavoritesByUser, optionFavorites)
 
+	if rs.HotReload {
+		hotReload(s)
+	}
+
 	// Admin Pages
 	basicAuth := basicauth.New(basicauth.Config{Username: os.Getenv("ADMIN_USER"), Password: os.Getenv("ADMIN_PASSWORD")})
 
@@ -93,7 +97,7 @@ func (rs Resource) Routes(s *fuego.Server) {
 	fuego.Get(adminRoutes, "/recipes/create", rs.adminCreateRecipePage)
 	fuego.Put(adminRoutes, "/recipes/edit", rs.editRecipe)
 	fuego.Post(adminRoutes, "/recipes/new", rs.adminAddRecipes)
-	fuego.Post(adminRoutes, "/recipes-new", rs.addRecipe)
+	fuego.Post(adminRoutes, "/recipes", rs.addRecipe)
 	fuego.Post(adminRoutes, "/dosings/new", rs.adminAddDosing)
 	fuego.Get(adminRoutes, "/ingredients", rs.adminIngredients,
 		optionPagination,

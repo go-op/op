@@ -1,6 +1,13 @@
 package components
 
 templ Scripts() {
+	<script>
+    // Hot reloading
+    let source = new EventSource("/reload");
+    source.onopen = function(event) { console.log("Connection opened", event) };
+    source.addEventListener("reload", function(event) { location.reload() });
+    source.onerror = function(event) { console.log("Error", event) };
+  </script>
 	<script defer type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 	<script defer src="https://unpkg.com/htmx.org/dist/htmx.min.js">
   htmx.on("htmx:sendError", function (evt) {

@@ -61,6 +61,7 @@ func main() {
 		UsersQueries:       store,
 		FavoritesQueries:   store,
 		Security:           fuego.NewSecurity(),
+		HotReload:          *debug,
 	}
 
 	rs := server.Resources{

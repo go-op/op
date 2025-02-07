@@ -28,6 +28,7 @@ type Resource struct {
 	FavoritesQueries   FavoriteRepository
 	MetaQueries        MetaRepository
 	Security           fuego.Security
+	HotReload          bool
 }
 
 func (rs Resource) showRecipesStd(w http.ResponseWriter, r *http.Request) {
