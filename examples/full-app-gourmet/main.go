@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/joho/godotenv"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/lmittmann/tint"
 
 	"github.com/go-fuego/fuego"
@@ -40,7 +42,7 @@ func main() {
 	// Set my custom colored logger
 	slog.SetDefault(slog.New(
 		tint.NewHandler(os.Stderr, &tint.Options{
-			AddSource:  true,
+			AddSource:  *debug,
 			Level:      logLevel,
 			TimeFormat: "15:04:05",
 		}),
@@ -60,9 +62,15 @@ func main() {
 
 	rs := server.Resources{
 		HandlersResources: viewsResources,
+		CorsOrigins:       strings.Split(os.Getenv("CORS_ORIGINS"), ","),
 	}
 
-	app := rs.Setup(fuego.WithAddr(fmt.Sprintf("localhost:%d", *port)))
+	app := rs.Setup(
+		fuego.WithAddr(fmt.Sprintf(":%d", *port)),
+		fuego.WithLoggingMiddleware(fuego.LoggingConfig{
+			RequestIDFunc: func() string { return shortuuid.New() },
+		}),
+	)
 
 	app.OpenAPI.Description().Servers = append(app.OpenAPI.Description().Servers, &openapi3.Server{
 		URL:         os.Getenv("PUBLIC_URL"),

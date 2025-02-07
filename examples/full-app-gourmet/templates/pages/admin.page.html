@@ -1,32 +1,26 @@
 {{ template "main.layout.html" . }}
 
 {{ define "page" }}
+<div>
+  <!-- Admin page -->
+  <h1>Admin page</h1>
+  <p>Here you can manage data.</p>
+  <p><a href="/admin/users">Manage users</a></p>
+
   <div>
-    <!-- Admin page -->
-    <h1>Admin page</h1>
-    <p>Here you can manage data.</p>
-    <p><a href="/admin/users">Manage users</a></p>
+    <h2>Add a recipe</h2>
+    <form class="form" action="/admin/recipes-new" method="POST">
+      <label class="label" for="name">Name</label>
+      <input class="input" type="text" id="name" name="name" required />
+      <label class="label" for="description">Description</label>
+      <input class="input" type="text" id="description" name="description" required />
 
-    <div>
-      <h2>Add a recipe</h2>
-      <form class="form" action="/recipes-new" method="POST">
-        <label class="label" for="name">Name</label>
-        <input class="input" type="text" id="name" name="name" required />
-        <label class="label" for="description">Description</label>
-        <input
-          class="input"
-          type="text"
-          id="description"
-          name="description"
-          required
-        />
+      <input class="btn" type="submit" value="Add" />
+    </form>
 
-        <input class="btn" type="submit" value="Add" />
-      </form>
-
-      <div id="recipe-list" class="mt-4">
-        {{ template "recipes-list.partial.html" .Recipes }}
-      </div>
+    <div id="recipe-list" class="mt-4">
+      {{ template "recipes-list.partial.html" .Recipes }}
     </div>
   </div>
+</div>
 {{ end }}

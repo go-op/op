@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/rs/cors"
 
 	"github.com/go-fuego/fuego"
 	"github.com/go-fuego/fuego/examples/full-app-gourmet/handler"
@@ -14,6 +15,7 @@ import (
 
 type Resources struct {
 	HandlersResources handler.Resource
+	CorsOrigins       []string
 }
 
 func cache(h http.Handler) http.Handler {
@@ -31,6 +33,11 @@ func (rs Resources) Setup(
 		fuego.WithAutoAuth(handler.LoginFunc),
 		fuego.WithTemplateFS(templates.FS),
 		fuego.WithTemplateGlobs("**/*.html", "**/**/*.html"),
+		fuego.WithGlobalMiddlewares(cors.New(cors.Options{
+			AllowedOrigins: rs.CorsOrigins,
+			AllowedHeaders: []string{"*"},
+			MaxAge:         300,
+		}).Handler),
 		fuego.WithRouteOptions(
 			fuego.OptionAddResponse(http.StatusForbidden, "Forbidden", fuego.Response{Type: fuego.HTTPError{}}),
 		),

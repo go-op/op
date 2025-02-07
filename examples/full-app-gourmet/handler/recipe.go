@@ -144,12 +144,16 @@ func (rs Resource) relatedRecipes(c fuego.ContextNoBody) (*fuego.DataOrTemplate[
 	), nil
 }
 
-func (rs Resource) showSingleRecipes2(c fuego.ContextNoBody) (fuego.Templ, error) {
+func (rs Resource) singleRecipe(c fuego.ContextNoBody) (*fuego.DataOrTemplate[store.Recipe], error) {
 	id := c.PathParam("id")
 
 	recipe, err := rs.RecipesQueries.GetRecipe(c.Context(), id)
 	if err != nil {
 		return nil, fmt.Errorf("error getting recipe %s: %w", id, err)
+	}
+
+	if c.Header("Accept") == "application/json" {
+		return fuego.DataOrHTML(recipe, nil), nil
 	}
 
 	ingredients, err := rs.IngredientsQueries.GetIngredientsOfRecipe(c.Context(), id)
@@ -159,13 +163,16 @@ func (rs Resource) showSingleRecipes2(c fuego.ContextNoBody) (fuego.Templ, error
 
 	adminCookie, _ := c.Request().Cookie("admin")
 
-	return templa.RecipePage(templa.RecipePageProps{
-		Recipe:         recipe,
-		Ingredients:    ingredients,
-		RelatedRecipes: []store.Recipe{{}, {}, {}, {}, {}},
-	}, templa.GeneralProps{
-		IsAdmin: adminCookie != nil,
-	}), nil
+	return fuego.DataOrHTML(
+		recipe,
+		templa.RecipePage(templa.RecipePageProps{
+			Recipe:         recipe,
+			Ingredients:    ingredients,
+			RelatedRecipes: []store.Recipe{{}, {}, {}, {}, {}},
+		}, templa.GeneralProps{
+			IsAdmin: adminCookie != nil,
+		}),
+	), nil
 }
 
 func (rs Resource) searchRecipes(c fuego.ContextNoBody) (fuego.Templ, error) {

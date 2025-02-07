@@ -17,11 +17,11 @@ func (rs Resource) showIngredients(c fuego.ContextNoBody) (fuego.Templ, error) {
 		}), nil
 	}
 
-	headerInfo, _ := rs.MetaQueries.GetHeaderInfo(c.Context())
+	// headerInfo, _ := rs.MetaQueries.GetHeaderInfo(c.Context())
 
 	return templa.IngredientPage(templa.IngredientPageProps{
 		Ingredients: ingredients,
-		Header:      headerInfo,
+		// Header:      headerInfo,
 	}), nil
 }
 

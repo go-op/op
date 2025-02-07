@@ -19,6 +19,8 @@ var optionPagination = option.Group(
 // Marks the routes not actually useful but shows different ways to use Fuego
 var optionDemo = option.Group(
 	option.Tags("fuego-demo"),
+	option.Deprecated(),
+	option.Description("This is a demo route, it is not useful for the Gourmet app but showcases Fuego features."),
 )
 
 func (rs Resource) Routes(s *fuego.Server) {
@@ -29,9 +31,8 @@ func (rs Resource) Routes(s *fuego.Server) {
 	fuego.GetStd(s, "/robots.txt", rs.robots, option.Middleware(cache.New()))
 	fuego.Get(s, "/recipes", rs.listRecipes, option.Tags("recipes"))
 	fuego.Get(s, "/planner", rs.planner)
-	fuego.Get(s, "/recipes/{id}", rs.showSingleRecipes2, option.Tags("recipes"))
+	fuego.Get(s, "/recipes/{id}", rs.singleRecipe, option.Tags("recipes"))
 	fuego.Get(s, "/recipes/{id}/related", rs.relatedRecipes, option.Tags("recipes"))
-	fuego.Post(s, "/recipes-new", rs.addRecipe, option.Tags("recipes"))
 	fuego.Get(s, "/ingredients", rs.showIngredients, option.Tags("ingredients"))
 	fuego.Get(s, "/fast", rs.fastRecipes, option.Tags("recipes"))
 	fuego.Get(s, "/healthy", rs.healthyRecipes, option.Tags("recipes"))
@@ -39,7 +40,6 @@ func (rs Resource) Routes(s *fuego.Server) {
 	// Public Chunks
 	fuego.Get(s, "/recipes-list", rs.showRecipesList,
 		option.Query("search", "Search query", param.Example("example", "Galette des Rois")),
-		option.Deprecated(),
 		optionDemo,
 	)
 	fuego.Get(s, "/search", rs.searchRecipes,
@@ -54,8 +54,10 @@ func (rs Resource) Routes(s *fuego.Server) {
 	)
 
 	// Admin Pages
+	basicAuth := basicauth.New(basicauth.Config{Username: os.Getenv("ADMIN_USER"), Password: os.Getenv("ADMIN_PASSWORD")})
+
 	adminRoutes := fuego.Group(s, "/admin",
-		option.Middleware(basicauth.New(basicauth.Config{Username: os.Getenv("ADMIN_USER"), Password: os.Getenv("ADMIN_PASSWORD")})),
+		option.Middleware(basicAuth),
 	)
 
 	fuego.Get(adminRoutes, "", rs.pageAdmin,
@@ -71,6 +73,7 @@ func (rs Resource) Routes(s *fuego.Server) {
 	fuego.Get(adminRoutes, "/recipes/create", rs.adminCreateRecipePage)
 	fuego.Put(adminRoutes, "/recipes/edit", rs.editRecipe)
 	fuego.Post(adminRoutes, "/recipes/new", rs.adminAddRecipes)
+	fuego.Post(adminRoutes, "/recipes-new", rs.addRecipe)
 	fuego.Post(adminRoutes, "/dosings/new", rs.adminAddDosing)
 	fuego.Get(adminRoutes, "/ingredients", rs.adminIngredients,
 		optionPagination,

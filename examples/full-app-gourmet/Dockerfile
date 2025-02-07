@@ -9,3 +9,4 @@ FROM alpine:latest
 WORKDIR /app
 COPY --from=builder /app/gourmet .
 ENTRYPOINT [ "/app/gourmet" ]
+CMD ["-db", "data/recipe.db"]
