@@ -449,3 +449,28 @@ func WithLoggingMiddleware(loggingConfig LoggingConfig) func(*Server) {
 		}
 	}
 }
+
+// WithStripTrailingSlash configures the server to automatically strip trailing slashes from URLs.
+// When enabled, requests to paths ending with "/" will be treated the same as their non-trailing
+// slash counterparts. For example, "/users/" and "/users" will route to the same handler.
+//
+// This option affects both route registration and incoming requests. When a request comes in with
+// a trailing slash, it will be matched against the non-trailing slash route if one exists.
+
+// Example usage:
+//
+//	s := fuego.NewServer(
+//		fuego.WithStripTrailingSlash(),
+//	)
+
+// After enabling:
+//   - A route registered as "/api/users" will match both "/api/users" and "/api/users/"
+//   - A route registered as "/api/users/" will be automatically converted to "/api/users"
+//
+// Note: This option should be set during server initialization as it affects all routes.
+func WithStripTrailingSlash() func(*Server) {
+	return func(s *Server) {
+		// Add OptionStripTrailingSlash to the default route options
+		s.routeOptions = append(s.routeOptions, OptionStripTrailingSlash())
+	}
+}
