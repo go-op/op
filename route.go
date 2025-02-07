@@ -90,7 +90,7 @@ func (r *BaseRoute) GenerateDefaultDescription() {
 	if r.overrideDescription {
 		return
 	}
-	r.Operation.Description = DefaultDescription(r.FullName, r.Middlewares) + r.Operation.Description
+	r.Operation.Description = DefaultDescription(r.FullName, r.Middlewares, r.OpenAPI.Config.MiddlewareDisplayLimit) + r.Operation.Description
 }
 
 func (r *BaseRoute) GenerateDefaultOperationID() {

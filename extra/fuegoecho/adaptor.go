@@ -14,15 +14,15 @@ type OpenAPIHandler struct {
 }
 
 func (o *OpenAPIHandler) SpecHandler(e *fuego.Engine) {
-	Get(e, o.Echo, e.OpenAPIConfig.SpecURL, e.SpecHandler(), fuego.OptionHide())
+	Get(e, o.Echo, e.OpenAPI.Config.SpecURL, e.SpecHandler(), fuego.OptionHide())
 }
 
 func (o *OpenAPIHandler) UIHandler(e *fuego.Engine) {
 	GetEcho(
 		e,
 		o.Echo,
-		e.OpenAPIConfig.SwaggerURL+"/",
-		echo.WrapHandler(e.OpenAPIConfig.UIHandler(e.OpenAPIConfig.SpecURL)),
+		e.OpenAPI.Config.SwaggerURL+"/",
+		echo.WrapHandler(e.OpenAPI.Config.UIHandler(e.OpenAPI.Config.SpecURL)),
 		fuego.OptionHide(),
 	)
 }

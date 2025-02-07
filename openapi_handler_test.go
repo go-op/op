@@ -23,7 +23,7 @@ func TestUIHandler(t *testing.T) {
 
 		s.Engine.RegisterOpenAPIRoutes(s)
 
-		require.NotNil(t, s.OpenAPIConfig.UIHandler)
+		require.NotNil(t, s.OpenAPI.Config.UIHandler)
 
 		w := httptest.NewRecorder()
 		r := httptest.NewRequest("GET", "/swagger/index.html", nil)
@@ -47,7 +47,7 @@ func TestUIHandler(t *testing.T) {
 		)
 		s.Engine.RegisterOpenAPIRoutes(s)
 
-		require.NotNil(t, s.OpenAPIConfig.UIHandler)
+		require.NotNil(t, s.OpenAPI.Config.UIHandler)
 
 		w := httptest.NewRecorder()
 		r := httptest.NewRequest("GET", "/swagger/index.html", nil)
