@@ -32,10 +32,10 @@ templ Search(props SearchProps) {
 			<div class="flex items-center w-full gap-6 rounded-md border border-zinc-200 dark:border-zinc-700 p-4">
 				<strong>Filters</strong>
 				if props.Filters.MaxTime > 0 {
-					<span class="whitespace-nowrap text-sm p-1 px-2 bg-zinc-200 dark:bg-zinc-900 shadow rounded">Max: { strconv.Itoa(props.Filters.MaxTime) }min</span>
+					<span class="whitespace-nowrap text-sm p-1 px-2 bg-zinc-200 dark:bg-zinc-900 shadow-sm rounded-sm">Max: { strconv.Itoa(props.Filters.MaxTime) }min</span>
 				}
 				if props.Filters.MaxCalories > 0 {
-					<span class="whitespace-nowrap text-sm p-1 px-2 bg-zinc-200 dark:bg-zinc-900 shadow rounded">Max: { strconv.Itoa(props.Filters.MaxCalories) }cal</span>
+					<span class="whitespace-nowrap text-sm p-1 px-2 bg-zinc-200 dark:bg-zinc-900 shadow-sm rounded-sm">Max: { strconv.Itoa(props.Filters.MaxCalories) }cal</span>
 				}
 				<select class="input w-full rounded-md border border-zinc-200 dark:border-zinc-700 p-2">
 					<option value="">All categories</option>

@@ -9,7 +9,7 @@ type CardProps struct {
 }
 
 templ Card(props CardProps) {
-	<div class="rounded-lg border dark:border-zinc-700 shadow-sm min-w-48">
+	<div class="rounded-lg border dark:border-zinc-700 shadow-xs min-w-48">
 		<a
 			hx-boost="true"
 			hx-target="#page"
@@ -35,7 +35,7 @@ templ Card(props CardProps) {
 					<span class="text-sm text-gray-600 dark:text-gray-400 uppercase">
 						{ props.WhenToEat }
 					</span>
-					<div class="inline-flex items-center rounded-full border px-2.5 py-0.5 w-fit text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80">
+					<div class="inline-flex items-center rounded-full border px-2.5 py-0.5 w-fit text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80">
 						New
 					</div>
 				</div>

@@ -4,57 +4,38 @@
 
 {{ define "page" }}
 
-  <section
-    id="hero"
-    class="flex w-full flex-col items-center justify-center gap-4
-	  bg-gray-800 bg-opacity-50 bg-cover bg-top bg-no-repeat px-4 py-8 text-center
+<section id="hero" class="flex w-full flex-col items-center justify-center gap-4
+	  bg-gray-800/50 bg-cover bg-top bg-no-repeat px-4 py-8 text-center
 	  text-white bg-blend-color-burn sm:px-6 md:gap-8 md:px-8
 	  md:py-16
 	  lg:px-10
-	  "
-    style="background-image: url('/static/hero.webp')"
-  >
-    <h1 class="font-serif text-4xl font-bold italic text-white">Gourmet</h1>
-    <p class="text-lg">Healthy recipes</p>
-  </section>
+	  " style="background-image: url('/static/hero.webp')">
+  <h1 class="font-serif text-4xl font-bold italic text-white">Gourmet</h1>
+  <p class="text-lg">Healthy recipes</p>
+</section>
 
-  <section
-    id="recipes-section"
-    class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4"
-  >
-    <h2>Today's recipes 📅</h2>
-    {{ template "recipe-slider.partial.html" .Recipes }}
-  </section>
+<section id="recipes-section" class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4">
+  <h2>Today's recipes 📅</h2>
+  {{ template "recipe-slider.partial.html" .Recipes }}
+</section>
 
-  <section
-    id="popular-recipes-section"
-    class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4"
-  >
-    <h2>Popular recipes this week ⭐️</h2>
-    {{ template "recipe-slider.partial.html" .PopularRecipes }}
-  </section>
+<section id="popular-recipes-section" class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4">
+  <h2>Popular recipes this week ⭐️</h2>
+  {{ template "recipe-slider.partial.html" .PopularRecipes }}
+</section>
 
-  <section
-    id="recipes-section"
-    class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4"
-  >
-    <h2>Seasonal ingredients 🍂</h2>
-    {{ template "ingredient-slider.partial.html" .SeasonIngredients }}
-  </section>
+<section id="recipes-section" class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4">
+  <h2>Seasonal ingredients 🍂</h2>
+  {{ template "ingredient-slider.partial.html" .SeasonIngredients }}
+</section>
 
-  <section
-    id="fast-recipes-section"
-    class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4"
-  >
-    <h2>Fast recipes ⚡️</h2>
-    {{ template "recipe-slider.partial.html" .FastRecipes }}
-  </section>
+<section id="fast-recipes-section" class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4">
+  <h2>Fast recipes ⚡️</h2>
+  {{ template "recipe-slider.partial.html" .FastRecipes }}
+</section>
 
-  <section
-    id="healthy-recipes-section"
-    class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4"
-  >
-    <h2>Healthy recipes 🥗</h2>
-    {{ template "recipe-slider.partial.html" .HealthyRecipes }}
-  </section>
+<section id="healthy-recipes-section" class="flex w-full flex-col gap-4 border-b border-stone-200 p-2 md:gap-8 md:p-4">
+  <h2>Healthy recipes 🥗</h2>
+  {{ template "recipe-slider.partial.html" .HealthyRecipes }}
+</section>
 {{ end }}

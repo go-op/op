@@ -1,38 +1,68 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@utility input {
+  @apply block w-full rounded-md border border-zinc-300 px-3 py-2 font-light placeholder-zinc-400 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-600 sm:text-sm;
+}
+
+@utility form {
+  @apply flex max-w-lg flex-col gap-1 md:gap-2;
+}
+
+@utility label {
+  @apply block text-sm font-medium text-zinc-700 dark:text-zinc-200;
+}
+
+@utility btn {
+  @apply inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+}
+
+@utility btn-secondary {
+  @apply border-indigo-600 bg-white text-indigo-600 hover:border-indigo-700 hover:bg-zinc-100 hover:text-indigo-700;
+}
+
+@utility btn-red-bg {
+  @apply border-white bg-transparent;
+}
+
+@utility btn-danger {
+  @apply inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-red-700 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+}
+
+@utility markdown {
+  ul {
+    @apply list-inside list-disc;
+  }
+
+  ol {
+    @apply list-inside list-decimal;
+  }
+}
+
+@utility card {
+  @apply divide-y divide-zinc-200 overflow-hidden rounded-lg bg-white shadow-sm;
+}
 
 @layer utilities {
   body {
     @apply font-light antialiased;
-  }
-
-  .input {
-    @apply block w-full rounded-md border border-zinc-300 px-3 py-2 font-light placeholder-zinc-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-600 sm:text-sm;
-  }
-
-  .form {
-    @apply flex max-w-lg flex-col gap-1 md:gap-2;
-  }
-
-  .label {
-    @apply block text-sm font-medium text-zinc-700 dark:text-zinc-200;
-  }
-
-  .btn {
-    @apply inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
-  }
-
-  .btn-secondary {
-    @apply border-indigo-600 bg-white text-indigo-600 hover:border-indigo-700 hover:bg-zinc-100 hover:text-indigo-700;
-  }
-
-  .btn-red-bg {
-    @apply border-white bg-transparent;
-  }
-
-  .btn-danger {
-    @apply inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
   }
 
   h1 {
@@ -45,19 +75,5 @@
 
   h3 {
     @apply mb-1 mt-2 text-xl font-bold md:mb-2 md:mt-4;
-  }
-
-  .markdown {
-    ul {
-      @apply list-inside list-disc;
-    }
-
-    ol {
-      @apply list-inside list-decimal;
-    }
-  }
-
-  .card {
-    @apply divide-y divide-zinc-200 overflow-hidden rounded-lg bg-white shadow;
   }
 }
