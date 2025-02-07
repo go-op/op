@@ -79,10 +79,11 @@ func TestWithOpenAPIConfig(t *testing.T) {
 			),
 		)
 
-		require.Equal(t, "/swagger", s.OpenAPIConfig.SwaggerURL)
-		require.Equal(t, "/swagger/openapi.json", s.OpenAPIConfig.SpecURL)
-		require.Equal(t, "doc/openapi.json", s.OpenAPIConfig.JSONFilePath)
-		require.False(t, s.OpenAPIConfig.PrettyFormatJSON)
+		require.Equal(t, "/swagger", s.OpenAPI.Config.SwaggerURL)
+		require.Equal(t, "/swagger/openapi.json", s.OpenAPI.Config.SpecURL)
+		require.Equal(t, "doc/openapi.json", s.OpenAPI.Config.JSONFilePath)
+		require.False(t, s.OpenAPI.Config.PrettyFormatJSON)
+		require.Equal(t, s.OpenAPI.Config.MiddlewareDisplayLimit, s.OpenAPI.Config.MiddlewareDisplayLimit)
 	})
 
 	t.Run("with custom values", func(t *testing.T) {
@@ -96,16 +97,18 @@ func TestWithOpenAPIConfig(t *testing.T) {
 						Disabled:         true,
 						SwaggerURL:       "/api",
 						SpecURL:          "/api/openapi.json",
+						MiddlewareDisplayLimit: 10,
 					}),
 			),
 		)
 
-		require.Equal(t, "/api", s.OpenAPIConfig.SwaggerURL)
-		require.Equal(t, "/api/openapi.json", s.OpenAPIConfig.SpecURL)
-		require.Equal(t, "openapi.json", s.OpenAPIConfig.JSONFilePath)
-		require.True(t, s.Engine.OpenAPIConfig.Disabled)
-		require.True(t, s.OpenAPIConfig.DisableLocalSave)
-		require.True(t, s.OpenAPIConfig.PrettyFormatJSON)
+		require.Equal(t, "/api", s.OpenAPI.Config.SwaggerURL)
+		require.Equal(t, "/api/openapi.json", s.OpenAPI.Config.SpecURL)
+		require.Equal(t, "openapi.json", s.OpenAPI.Config.JSONFilePath)
+		require.True(t, s.Engine.OpenAPI.Config.Disabled)
+		require.True(t, s.OpenAPI.Config.DisableLocalSave)
+		require.True(t, s.OpenAPI.Config.PrettyFormatJSON)
+		require.Equal(t, s.OpenAPI.Config.MiddlewareDisplayLimit, s.OpenAPI.Config.MiddlewareDisplayLimit)
 	})
 
 	t.Run("with invalid local path values", func(t *testing.T) {
@@ -283,7 +286,7 @@ func TestWithoutStartupMessages(t *testing.T) {
 	)
 
 	require.True(t, s.disableStartupMessages)
-	require.True(t, s.Engine.OpenAPIConfig.DisableMessages)
+	require.True(t, s.Engine.OpenAPI.Config.DisableMessages)
 }
 
 func TestWithoutAutoGroupTags(t *testing.T) {

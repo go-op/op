@@ -21,11 +21,14 @@ func NewOpenAPI() *OpenAPI {
 		description:            &desc,
 		generator:              openapi3gen.NewGenerator(),
 		globalOpenAPIResponses: []openAPIResponse{},
+		Config:                 defaultOpenAPIConfig,
 	}
 }
 
 // OpenAPI holds the OpenAPI OpenAPIDescription (OAD) and OpenAPI capabilities.
 type OpenAPI struct {
+	Config OpenAPIConfig
+
 	description            *openapi3.T
 	generator              *openapi3gen.Generator
 	globalOpenAPIResponses []openAPIResponse
@@ -86,12 +89,12 @@ type OpenAPIServable interface {
 }
 
 func (e *Engine) RegisterOpenAPIRoutes(o OpenAPIServable) {
-	if e.OpenAPIConfig.Disabled {
+	if e.OpenAPI.Config.Disabled {
 		return
 	}
 	o.SpecHandler(e)
 
-	if e.OpenAPIConfig.DisableSwaggerUI {
+	if e.OpenAPI.Config.DisableSwaggerUI {
 		return
 	}
 	o.UIHandler(e)

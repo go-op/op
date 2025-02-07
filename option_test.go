@@ -833,6 +833,24 @@ func TestOptionDescription(t *testing.T) {
 
 		require.Equal(t, "#### Controller: \n\n`github.com/go-fuego/fuego_test.helloWorld`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- more middleware…\n\n---\n\nanother description", route.Operation.Description)
 	})
+
+	t.Run("Add specific MiddlewareDisplayLimit", func(t *testing.T) {
+		s := fuego.NewServer(
+			fuego.WithEngineOptions(
+				fuego.WithOpenAPIConfig(
+					fuego.OpenAPIConfig{
+						MiddlewareDisplayLimit: 1,
+					},
+				),
+			),
+		)
+		route := fuego.Get(s, "/test", helloWorld,
+			option.Middleware(dummyMiddleware),
+			option.Description("another description"), // 2nd middeware, should not be included
+		)
+
+		require.Equal(t, "#### Controller: \n\n`github.com/go-fuego/fuego_test.helloWorld`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- more middleware…\n\n---\n\nanother description", route.Operation.Description)
+	})
 }
 
 func TestDefaultStatusCode(t *testing.T) {

@@ -143,13 +143,13 @@ func NewServer(options ...func(*Server)) *Server {
 }
 
 func (s *Server) SpecHandler(_ *Engine) {
-	Get(s, s.OpenAPIConfig.SpecURL, s.Engine.SpecHandler(), OptionHide())
-	s.printOpenAPIMessage(fmt.Sprintf("JSON spec: %s%s", s.url(), s.OpenAPIConfig.SpecURL))
+	Get(s, s.OpenAPI.Config.SpecURL, s.Engine.SpecHandler(), OptionHide())
+	s.printOpenAPIMessage(fmt.Sprintf("JSON spec: %s%s", s.url(), s.OpenAPI.Config.SpecURL))
 }
 
 func (s *Server) UIHandler(_ *Engine) {
-	GetStd(s, s.OpenAPIConfig.SwaggerURL+"/", s.OpenAPIConfig.UIHandler(s.OpenAPIConfig.SpecURL).ServeHTTP, OptionHide())
-	s.printOpenAPIMessage(fmt.Sprintf("OpenAPI UI: %s%s/index.html", s.url(), s.OpenAPIConfig.SwaggerURL))
+	GetStd(s, s.OpenAPI.Config.SwaggerURL+"/", s.OpenAPI.Config.UIHandler(s.OpenAPI.Config.SpecURL).ServeHTTP, OptionHide())
+	s.printOpenAPIMessage(fmt.Sprintf("OpenAPI UI: %s%s/index.html", s.url(), s.OpenAPI.Config.SwaggerURL))
 }
 
 // WithTemplateFS sets the filesystem used to load templates.
@@ -362,7 +362,7 @@ func WithErrorSerializer(serializer ErrorSender) func(*Server) {
 func WithoutStartupMessages() func(*Server) {
 	return func(c *Server) {
 		c.disableStartupMessages = true
-		c.OpenAPIConfig.DisableMessages = true
+		c.OpenAPI.Config.DisableMessages = true
 	}
 }
 
