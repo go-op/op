@@ -57,3 +57,17 @@ type Recipe struct {
 	Disclaimer   string    `json:"disclaimer"`
 	WhenToEat    string    `json:"when_to_eat"`
 }
+
+type User struct {
+	Username          string    `json:"username"`
+	CreatedAt         time.Time `json:"created_at"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	EncryptedPassword string    `json:"encrypted_password"`
+}
+
+type UsersRecipesFavorite struct {
+	Username  string    `json:"username"`
+	RecipeID  string    `json:"recipe_id"`
+	CreatedAt time.Time `json:"created_at"`
+}

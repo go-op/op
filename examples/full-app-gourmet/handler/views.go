@@ -53,6 +53,26 @@ func (rs Resource) Routes(s *fuego.Server) {
 		option.Tags("ingredients"),
 	)
 
+	// Users
+	fuego.Get(s, "/users", rs.adminRecipes, option.Tags("users"))
+	fuego.Get(s, "/users/{username}", rs.getUserByUsername, option.Tags("users"))
+
+	// Favorites
+	optionFavorites := option.Group(
+		option.Tags("favorites"),
+		option.Path("username", "Username", param.Required(), param.Example("example", "omega")),
+	)
+	optionQueryRecipeID := option.Query("recipeID", "Recipe ID", param.Required(), param.Example("example", "abcde1245"))
+	fuego.Post(s, "/users/{username}/favorites", rs.addFavorite,
+		optionFavorites,
+		optionQueryRecipeID,
+	)
+	fuego.Delete(s, "/users/{username}/favorites", rs.removeFavorite,
+		optionFavorites,
+		optionQueryRecipeID,
+	)
+	fuego.Get(s, "/users/{username}/favorites", rs.getFavoritesByUser, optionFavorites)
+
 	// Admin Pages
 	basicAuth := basicauth.New(basicauth.Config{Username: os.Getenv("ADMIN_USER"), Password: os.Getenv("ADMIN_PASSWORD")})
 
@@ -85,5 +105,7 @@ func (rs Resource) Routes(s *fuego.Server) {
 	fuego.Post(adminRoutes, "/ingredients/new", rs.adminCreateIngredient,
 		option.Description("Create a new ingredient"),
 	)
-	fuego.Get(adminRoutes, "/users", rs.adminRecipes)
+
+	// Users
+	fuego.Post(s, "/users", rs.createUser)
 }

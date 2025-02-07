@@ -24,6 +24,8 @@ type Resource struct {
 	DosingQueries      DosingRepository
 	RecipesQueries     RecipeRepository
 	IngredientsQueries IngredientRepository
+	UsersQueries       UserRepository
+	FavoritesQueries   FavoriteRepository
 	MetaQueries        MetaRepository
 	Security           fuego.Security
 }

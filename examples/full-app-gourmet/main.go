@@ -58,6 +58,9 @@ func main() {
 		RecipesQueries:     store,
 		IngredientsQueries: store,
 		DosingQueries:      store,
+		UsersQueries:       store,
+		FavoritesQueries:   store,
+		Security:           fuego.NewSecurity(),
 	}
 
 	rs := server.Resources{
