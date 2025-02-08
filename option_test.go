@@ -830,8 +830,7 @@ func TestOptionDescription(t *testing.T) {
 			option.Middleware(dummyMiddleware), // After the description (6th middleware)
 			option.Middleware(dummyMiddleware), // 7th middleware, should not be included
 		)
-
-		require.Equal(t, "#### Controller: \n\n`github.com/go-fuego/fuego_test.helloWorld`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- more middleware…\n\n---\n\nanother description", route.Operation.Description)
+		require.Equal(t, "#### Controller: \n\n`github.com/go-fuego/fuego_test.helloWorld`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n- `github.com/go-fuego/fuego_test.dummyMiddleware`\n\n---\n\nanother description", route.Operation.Description)
 	})
 }
 

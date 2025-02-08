@@ -197,21 +197,36 @@ func camelToHuman(s string) string {
 }
 
 // DefaultDescription returns a default .md description for a controller
-func DefaultDescription[T any](handler string, middlewares []T) string {
-	description := "#### Controller: \n\n`" +
-		handler + "`"
+func DefaultDescription[T any](handler string, middlewares []T, middlewareConfig *MiddlewareConfig) string {
 
-	if len(middlewares) > 0 {
-		description += "\n\n#### Middlewares:\n"
+	// Start with the controller info
+	description := "#### Controller: \n\n`" + handler + "`"
 
-		for i, fn := range middlewares {
-			description += "\n- `" + FuncName(fn) + "`"
+	// If middlewares are disabled, or there aren't any, skip the block entirely
+	if middlewareConfig.DisableMiddlewareSection || len(middlewares) == 0 {
+		return description + "\n\n---\n\n"
+	}
 
-			if i == 4 {
-				description += "\n- more middleware…"
-				break
+	// Add the middlewares section
+	description += "\n\n#### Middlewares:\n"
+
+	for i, fn := range middlewares {
+		// If we've reached the maximum configured to display, show a summary and stop
+		if i == middlewareConfig.MaxNumberOfMiddlewares {
+			description += "\n- more middleware…"
+			break
+		}
+
+		funcName := FuncName(fn)
+
+		// If ShortMiddlewaresPaths is true, remove everything before the last slash
+		if middlewareConfig.ShortMiddlewaresPaths {
+			if idx := strings.LastIndex(funcName, "/"); idx != -1 {
+				funcName = funcName[idx+1:]
 			}
 		}
+
+		description += "\n- `" + funcName + "`"
 	}
 
 	return description + "\n\n---\n\n"

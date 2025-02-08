@@ -128,12 +128,12 @@ func validateSwaggerURL(swaggerURL string) bool {
 
 // RegisterOpenAPIOperation registers the route to the OpenAPI description.
 // Modifies the route's Operation.
-func (route *Route[ResponseBody, RequestBody]) RegisterOpenAPIOperation(openapi *OpenAPI) error {
+func (route *Route[ResponseBody, RequestBody]) RegisterOpenAPIOperation(engine *Engine) error {
 	if route.Hidden || route.Method == "" {
 		return nil
 	}
-
-	operation, err := RegisterOpenAPIOperation(openapi, *route)
+	route.middlewareConfig = &engine.OpenAPIConfig.middlewareConfig
+	operation, err := RegisterOpenAPIOperation(engine.OpenAPI, *route)
 	route.Operation = operation
 	return err
 }
@@ -145,35 +145,35 @@ func RegisterOpenAPIOperation[T, B any](openapi *OpenAPI, route Route[T, B]) (*o
 	if route.Operation == nil {
 		route.Operation = openapi3.NewOperation()
 	}
-
+	
 	if route.FullName == "" {
 		route.FullName = route.Path
 	}
-
+	
 	route.GenerateDefaultDescription()
-
+	
 	if route.Operation.Summary == "" {
 		route.Operation.Summary = route.NameFromNamespace(camelToHuman)
 	}
-
+	
 	if route.Operation.OperationID == "" {
 		route.GenerateDefaultOperationID()
 	}
-
+	
 	// Request Body
 	if route.Operation.RequestBody == nil {
 		bodyTag := SchemaTagFromType(openapi, *new(B))
-
+		
 		if bodyTag.Name != "unknown-interface" {
 			requestBody := newRequestBody[B](bodyTag, route.RequestContentTypes)
-
+			
 			// add request body to operation
 			route.Operation.RequestBody = &openapi3.RequestBodyRef{
 				Value: requestBody,
 			}
 		}
 	}
-
+	
 	// Response - globals
 	for _, openAPIGlobalResponse := range openapi.globalOpenAPIResponses {
 		addResponseIfNotSet(
@@ -184,7 +184,7 @@ func RegisterOpenAPIOperation[T, B any](openapi *OpenAPI, route Route[T, B]) (*o
 			openAPIGlobalResponse.Response,
 		)
 	}
-
+	
 	// Automatically add non-declared 200 (or other) Response
 	if route.DefaultStatusCode == 0 {
 		route.DefaultStatusCode = 200
@@ -196,14 +196,14 @@ func RegisterOpenAPIOperation[T, B any](openapi *OpenAPI, route Route[T, B]) (*o
 		route.Operation.AddResponse(route.DefaultStatusCode, response)
 		responseDefault = route.Operation.Responses.Value(defaultStatusCode)
 	}
-
+	
 	// Automatically add non-declared Content for 200 (or other) Response
 	if responseDefault.Value.Content == nil {
 		responseSchema := SchemaTagFromType(openapi, *new(T))
 		content := openapi3.NewContentWithSchemaRef(&responseSchema.SchemaRef, []string{"application/json", "application/xml"})
 		responseDefault.Value.WithContent(content)
 	}
-
+	
 	// Automatically add non-declared Path parameters
 	for _, pathParam := range parsePathParams(route.Path) {
 		if exists := route.Operation.Parameters.GetByInAndName("path", pathParam); exists != nil {
@@ -214,7 +214,7 @@ func RegisterOpenAPIOperation[T, B any](openapi *OpenAPI, route Route[T, B]) (*o
 		if strings.HasSuffix(pathParam, "...") {
 			parameter.Description += " (might contain slashes)"
 		}
-
+		
 		route.Operation.AddParameter(parameter)
 	}
 	for _, params := range route.Operation.Parameters {
@@ -224,7 +224,7 @@ func RegisterOpenAPIOperation[T, B any](openapi *OpenAPI, route Route[T, B]) (*o
 			}
 		}
 	}
-
+	
 	openapi.Description().AddOperation(route.Path, route.Method, route.Operation)
 
 	return route.Operation, nil

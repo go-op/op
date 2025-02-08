@@ -15,7 +15,7 @@ import (
 // NewEngine creates a new Engine with the given options.
 // For example:
 //
-//	engine := fuego.NewEngin(
+//	engine := fuego.NewEngine(
 //		WithOpenAPIConfig(
 //			OpenAPIConfig{
 //				PrettyFormatJSON: true,
@@ -64,6 +64,8 @@ type OpenAPIConfig struct {
 	SwaggerURL string
 	// If true, the server will not serve the Swagger UI
 	DisableSwaggerUI bool
+	// Middleware configuration for the engine
+	middlewareConfig MiddlewareConfig
 }
 
 var defaultOpenAPIConfig = OpenAPIConfig{
@@ -71,12 +73,39 @@ var defaultOpenAPIConfig = OpenAPIConfig{
 	SpecURL:      "/swagger/openapi.json",
 	SwaggerURL:   "/swagger",
 	UIHandler:    DefaultOpenAPIHandler,
+	middlewareConfig: MiddlewareConfig{
+		DisableMiddlewareSection: false,
+		MaxNumberOfMiddlewares:   6,
+		ShortMiddlewaresPaths:    false,
+	},
 }
 
 // WithRequestContentType sets the accepted content types for the engine.
 // By default, the accepted content types is */*.
 func WithRequestContentType(consumes ...string) func(*Engine) {
 	return func(e *Engine) { e.requestContentTypes = consumes }
+}
+
+type MiddlewareConfig struct {
+	DisableMiddlewareSection bool
+	MaxNumberOfMiddlewares   int
+	ShortMiddlewaresPaths    bool
+}
+
+func WithMiddlewareConfig(cfg MiddlewareConfig) func(*Engine) {
+	return func(e *Engine) {
+		// Ensure defaults if not provided
+		if !cfg.DisableMiddlewareSection {
+			cfg.DisableMiddlewareSection = false
+		}
+		if cfg.MaxNumberOfMiddlewares == 0 {
+			cfg.MaxNumberOfMiddlewares = 6
+		}
+		if !cfg.ShortMiddlewaresPaths {
+			cfg.ShortMiddlewaresPaths = false
+		}
+		e.OpenAPIConfig.middlewareConfig = cfg
+	}
 }
 
 func WithOpenAPIConfig(config OpenAPIConfig) func(*Engine) {
@@ -107,6 +136,7 @@ func WithOpenAPIConfig(config OpenAPIConfig) func(*Engine) {
 			slog.Error("Error serving Swagger UI. Value of 's.OpenAPIServerConfig.SwaggerURL' option is not valid", "url", e.OpenAPIConfig.SwaggerURL)
 			return
 		}
+		e.OpenAPIConfig.middlewareConfig = config.middlewareConfig
 	}
 }
 

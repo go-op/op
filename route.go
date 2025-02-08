@@ -84,13 +84,16 @@ type BaseRoute struct {
 
 	// Override the default description
 	overrideDescription bool
+
+	// Middleware configuration for the route
+	middlewareConfig *MiddlewareConfig
 }
 
 func (r *BaseRoute) GenerateDefaultDescription() {
 	if r.overrideDescription {
 		return
 	}
-	r.Operation.Description = DefaultDescription(r.FullName, r.Middlewares) + r.Operation.Description
+	r.Operation.Description = DefaultDescription(r.FullName, r.Middlewares, r.middlewareConfig) + r.Operation.Description
 }
 
 func (r *BaseRoute) GenerateDefaultOperationID() {

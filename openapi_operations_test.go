@@ -1,6 +1,7 @@
 package fuego
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -9,12 +10,18 @@ import (
 
 func TestTags(t *testing.T) {
 	s := NewServer()
-	route := Get(s, "/test", testController,
+	fmt.Print("\n\ntest_log server: \n", s)
+
+	route := Get(s, 
+		"/test", 
+		testController,
 		OptionTags("my-tag"),
 		OptionDescription("my description"),
 		OptionSummary("my summary"),
 		OptionDeprecated(),
 	)
+
+	fmt.Print("\n\n\n\ntest_log route \n", route.Operation.Description)
 
 	require.Equal(t, []string{"my-tag"}, route.Operation.Tags)
 	require.Equal(t, "#### Controller: \n\n`github.com/go-fuego/fuego.testController`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nmy description", route.Operation.Description)
